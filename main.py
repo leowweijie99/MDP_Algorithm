@@ -3,7 +3,7 @@ import os
 from Robot import Robot
 
 WIDTH, HEIGHT = 1024, 720
-FPS = 30
+FPS = 40
 BLOCK_SIZE = 32
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 

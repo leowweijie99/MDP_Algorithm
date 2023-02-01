@@ -26,5 +26,5 @@ class Cell:
             pass
 
     def set_obstacle(self):
-        self.obstacle = Obstacle(self.x, self.y)
+        self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate)
         self.status = CellStatus.OBS

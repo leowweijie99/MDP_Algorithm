@@ -58,11 +58,16 @@ class Grid():
         if self.is_inside_grid(pos_x, pos_y):
             adjusted_pos_x = pos_x - const.HORIZONTAL_OFFSET
             adjusted_pos_y = pos_y - const.VERTICAL_OFFSET
-            grid_x = adjusted_pos_x//const.BLOCK_SIZE
-            grid_y = adjusted_pos_y//const.BLOCK_SIZE
-            return [grid_x, 20 - grid_y]
+            grid_x =  adjusted_pos_x//(const.BLOCK_SIZE + MARGIN)
+            grid_y =  adjusted_pos_y//(const.BLOCK_SIZE + MARGIN)
+            return [int(grid_x), int(19 - grid_y)]
 
         return None
+
+    def get_pixel_measure(self, grid_x, grid_y):
+        pix_x = const.HORIZONTAL_OFFSET + grid_x*(const.BLOCK_SIZE + MARGIN)
+        pix_y = const.VERTICAL_OFFSET + grid_y*(const.BLOCK_SIZE + MARGIN)
+        return [pix_x, pix_y]
 
     def set_cell_as_obstacle(self, pos_x, pos_y):
         self.cells[pos_x][pos_y].set_obstacle()

@@ -71,3 +71,5 @@ class Grid():
 
     def set_cell_as_obstacle(self, pos_x, pos_y):
         self.cells[pos_x][pos_y].set_obstacle()
+        self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
+        print(self.obstacles)

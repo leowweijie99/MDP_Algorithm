@@ -39,22 +39,21 @@ class Controls:
             if ((btn.x < mousePos[0] < btn.x + btn.width) and (btn.y < mousePos[1] < btn.y + btn.height)): # Check if mosPos is within a button's x and y coord
                 func = btn.function
                 if func == "ADD":
-                    return
+                    return True
                 elif func == "REMOVE":
-                    return
+                    return True
                 elif func == "FORWARD":
                     print("Moving Forward")
-                    return
+                    return True
                 elif func == "FORWARD_LEFT":
-                    return
+                    return True
                 elif func == "FORWARD_RIGHT":
-                    return
+                    return True
                 elif func == "BACKWARD":
                     print("Moving Backward")
-                    return
+                    return True
                 elif func == "BACKWARD_LEFT":
-                    return
+                    return True
                 elif func == "BACKWARD_RIGHT":
-                    return
-                return   
-        return
+                    return True 
+        return False

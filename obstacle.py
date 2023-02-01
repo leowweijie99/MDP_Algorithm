@@ -14,6 +14,7 @@ class Obstacle:
         self.facing_direction = facing_direction
         self.visited = False
         self.host_square = str(x) + '-' + str(y)
+        self.target = ''
 
     def has_been_visited(self):
         if self.visited == True:

@@ -1,8 +1,6 @@
 import pygame
 import constants as const
-from cell import CellStatus, Cell
 from grid import Grid
-from obstacle import Obstacle
 from controls import Controls
 
 class Simulator:
@@ -27,11 +25,9 @@ class Simulator:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    if self.is_inside_grid(pos[0], pos[1]):
+                    if self.grid.is_inside_grid(pos[0], pos[1]):
                         current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
-                        
-                        if current_cell == None:
-                            print("Not possible to do anything here")
+                        print(current_cell)
 
                     elif self.controls.click_selected_button(pos):
                         pass
@@ -40,11 +36,6 @@ class Simulator:
             self.controls.draw_buttons()
             pygame.display.update()
         pygame.quit()
-
-    def is_inside_grid(self, pos_x, pos_y):
-        if pos_x <= const.GRID_SIZE and pos_x >= 0 and pos_y <= const.GRID_SIZE and pos_y >= 0:
-            return True
-        return False
 
     
 

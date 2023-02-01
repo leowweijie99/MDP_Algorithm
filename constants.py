@@ -13,3 +13,7 @@ FPS = 40
 BLOCK_SIZE = 24
 MARGIN = 2
 GRID_SIZE = (BLOCK_SIZE+MARGIN)*20
+
+#CONTROLS CONSTANTS
+btn_font_size = 14
+btn_font = "Comic Sans MS"

@@ -14,6 +14,8 @@ class Grid():
         self.outer_margin_x_pixel = top_left_pos[0] # pixel from left
         self.outer_margin_y_pixel = top_left_pos[1] # pixel from top
 
+        self.grid_surface = pygame.Surface(self.get_total_pixel_size())
+
         self.cells = np.empty((self.size_x, self.size_y), dtype=Cell)
         self.initialize_cells()
 
@@ -23,7 +25,6 @@ class Grid():
                 self.cells[x][y] = Cell(x, y)
 
     def get_grid_surface(self):
-        self.grid_surface = pygame.Surface(self.get_total_pixel_size())
         self.grid_surface.fill(const.BLACK)
 
          # Draw the cells in the grid

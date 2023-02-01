@@ -1,7 +1,8 @@
 import pygame
 import constants as const
+from cell import CellStatus, Cell
 from grid import Grid
-
+from obstacle import Obstacle
 from controls import Controls
 
 class Simulator:
@@ -23,28 +24,43 @@ class Simulator:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    # check if click within grid
-                    self.controls.click_selected_button(pos) # else, check which button is clicked
+                    if self.is_inside_grid(pos[0], pos[1]):
+                        current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
+                        
+                        if current_cell == None:
+                            print("Not possible to do anything here")
+
+                    elif self.controls.click_selected_button(pos):
+                        pass
+
             self.draw_grid()
             self.controls.draw_buttons()
             pygame.display.update()
         pygame.quit()
+
+    def is_inside_grid(self, pos_x, pos_y):
+        if pos_x <= const.GRID_SIZE and pos_x >= 0 and pos_y <= const.GRID_SIZE and pos_y >= 0:
+            return True
+        return False
+
     
 
     def draw_grid(self):
         self.grid_surface = self.grid.get_grid_surface()
         self.screen.blit(self.grid_surface, self.grid_from_screen_top_left)
-
-        #Render the index here
         start_pos = (self.grid_from_screen_top_left[0]-const.BLOCK_SIZE, self.grid_from_screen_top_left[1])
         font = pygame.font.SysFont('Futura', const.BLOCK_SIZE)
+
         for x in range(self.grid.size_x):
             index = font.render(str(19-x), False, (255, 255, 255))
             self.screen.blit(index, (start_pos[0], start_pos[1] + const.MARGIN + (x * (const.BLOCK_SIZE + const.MARGIN))))
 
         start_pos = (self.grid_from_screen_top_left[0], self.grid_from_screen_top_left[1] + const.GRID_SIZE)
+
         for y in range(self.grid.size_y):
             index = font.render(str(y), False, (255, 255, 255))
             self.screen.blit(index, (start_pos[0] + const.MARGIN + (y * (const.BLOCK_SIZE + const.MARGIN)), start_pos[1]))
+

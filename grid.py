@@ -15,6 +15,8 @@ class Grid():
         self.outer_margin_y_pixel = top_left_pos[1] # pixel from top
 
         self.grid_surface = pygame.Surface(self.get_total_pixel_size())
+        
+        self.obstacles = []
 
         self.cells = np.empty((self.size_x, self.size_y), dtype=Cell)
         self.initialize_cells()
@@ -41,3 +43,11 @@ class Grid():
         size_x_pixel = self.size_x * (self.block_size + MARGIN) + MARGIN
         size_y_pixel = self.size_y * (self.block_size + MARGIN) + MARGIN
         return (size_x_pixel, size_y_pixel)
+
+    def find_cell_clicked(self, pos_x, pos_y):
+        if self.is_inside_grid(pos_x, pos_y):
+            grid_x = pos_x//const.BLOCK_SIZE
+            grid_y = pos_y//const.BLOCK_SIZE
+            return [grid_x, grid_y]
+
+        return None

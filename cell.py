@@ -26,5 +26,12 @@ class Cell:
             pass
 
     def set_obstacle(self):
-        self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate)
-        self.status = CellStatus.OBS
+        if(self.status == CellStatus.EMPTY):
+            self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate)
+            self.status = CellStatus.OBS
+        elif(self.status == CellStatus.OBS):
+            print("This is already an obstacle")
+
+    def remove_obstacle(self):
+        self.obstacle = None
+        self.status = CellStatus.EMPTY

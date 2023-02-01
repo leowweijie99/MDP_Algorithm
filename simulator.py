@@ -24,10 +24,17 @@ class Simulator:
                     running = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    if self.grid.is_inside_grid(pos[0], pos[1]):
-                        current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
-                        self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
+                    if event.button == 1:
+                        pos = pygame.mouse.get_pos()
+                        if self.grid.is_inside_grid(pos[0], pos[1]):
+                            current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
+                            self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
+                            
+                    if event.button == 3:
+                        pos = pygame.mouse.get_pos()
+                        if self.grid.is_inside_grid(pos[0], pos[1]):
+                            current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
+                            self.grid.set_cell_as_normal(current_cell[0], current_cell[1])    
 
                     elif self.controls.click_selected_button(pos):
                         pass

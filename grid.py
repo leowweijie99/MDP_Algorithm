@@ -73,3 +73,8 @@ class Grid():
         self.cells[pos_x][pos_y].set_obstacle()
         self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
         print(self.obstacles)
+
+    def set_cell_as_normal(self, pos_x, pos_y):
+        self.cells[pos_x][pos_y].remove_obstacle()
+        #need to remove the obstacle thats been set as normal from the obstacles list
+        print(self.obstacles)

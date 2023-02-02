@@ -3,8 +3,9 @@ from button import *
 
 class Controls:
 
-    def __init__(self, surface):
+    def __init__(self, surface, robot):
         self.surface = surface
+        self.robot = robot
         self.buttons = []
 
         # ------------- Initialize all the buttons here --------------------------------------------------
@@ -43,17 +44,21 @@ class Controls:
                 elif func == "REMOVE":
                     return True
                 elif func == "FORWARD":
-                    print("Moving Forward")
+                    self.robot.move_forward()
                     return True
                 elif func == "FORWARD_LEFT":
+                    self.robot.move_forward_left()
                     return True
                 elif func == "FORWARD_RIGHT":
+                    self.robot.move_forward_right()
                     return True
                 elif func == "BACKWARD":
-                    print("Moving Backward")
+                    self.robot.move_backward()
                     return True
                 elif func == "BACKWARD_LEFT":
+                    self.robot.move_backward_left()
                     return True
                 elif func == "BACKWARD_RIGHT":
+                    self.robot.move_backward_right()
                     return True 
         return False

@@ -33,13 +33,17 @@ class Grid():
         for x in range(self.size_x):
             for y in range(self.size_y):
                 cell = self.cells[x][y]
+                x_coord = (MARGIN + self.block_size) * x + MARGIN
+                y_coord = (MARGIN + self.block_size) * (self.size_y - 1 - y) + MARGIN
+                cell_surface = pygame.Surface((self.block_size, self.block_size))
                 if cell.obstacle != None:
                     color = const.NAVY_BLUE
                 else:
                     color = const.WHITE
-                cell_surface = pygame.Surface((self.block_size, self.block_size))
                 cell_surface.fill(color)
-                self.grid_surface.blit(cell_surface, ((MARGIN + self.block_size) * x + MARGIN, (MARGIN + self.block_size) * (self.size_y - 1 - y) + MARGIN))
+                if cell.obstacle != None:
+                    cell.obstacle.draw_obstacle(cell_surface, 0, 0)
+                self.grid_surface.blit(cell_surface, (x_coord, y_coord))
         return self.grid_surface
 
     def get_total_pixel_size(self) -> tuple:

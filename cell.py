@@ -1,5 +1,7 @@
 from enum import IntEnum
 from obstacle import Obstacle
+import pygame
+import constants as const
 
 class CellStatus(IntEnum):
     EMPTY = 0 # empty
@@ -16,14 +18,6 @@ class Cell:
         self.y_coordinate = y_coordinate
         self.status = status
         self.obstacle = None
-
-    def draw_cell(self):
-        if self.status == CellStatus.OBS:
-            """Draw the obstacle square"""
-            pass
-        else:
-            """Draw normal cell square"""
-            pass
 
     def set_obstacle(self):
         self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate)

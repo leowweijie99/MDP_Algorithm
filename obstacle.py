@@ -30,16 +30,12 @@ class Obstacle:
     def draw_obstacle(self, cell_surface, x, y):
         if self.facing_direction == FacingDirection.UP:
             pygame.draw.line(cell_surface, const.NEON_PINK, (x, y), (x + length, y), 8)
-            pygame.display.flip()
         elif self.facing_direction == FacingDirection.RIGHT:
             pygame.draw.line(cell_surface, const.NEON_PINK, (x + length, y), (x + length, y + length), 8)
-            pygame.display.flip()
         elif self.facing_direction == FacingDirection.DOWN:
             pygame.draw.line(cell_surface, const.NEON_PINK, (x, y + length), (x + length, y + length), 8)
-            pygame.display.flip()
         elif self.facing_direction == FacingDirection.LEFT:
             pygame.draw.line(cell_surface, const.NEON_PINK, (x, y), (x, y + length), 8)
-            pygame.display.flip()
 
     def on_click(self):
         facing_directions = [FacingDirection.UP, FacingDirection.RIGHT, FacingDirection.DOWN, FacingDirection.LEFT]

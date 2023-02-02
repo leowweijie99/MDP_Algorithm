@@ -18,6 +18,7 @@ class Simulator:
         running = True
         clock = pygame.time.Clock()
         click_count = 0
+        obs = []
         while (running):
             clock.tick(const.FPS)
             for event in pygame.event.get():
@@ -30,7 +31,19 @@ class Simulator:
                         if self.grid.is_inside_grid(pos[0], pos[1]):
                             current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
-                            self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
+                            direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
+                            duplicate = 0
+                            index = 0
+                            for x in range (len(obs)):
+                                if current_cell == obs[x][0]:
+                                    duplicate = 1
+                                    index = x
+                            if duplicate == 1:
+                                obs.remove(obs[index])
+                                obs.append((current_cell, direction))
+                            else:
+                                obs.append((current_cell, direction))
+                            print("Obstacles are = ", obs)
                             click_count+=1
 
                             
@@ -38,7 +51,19 @@ class Simulator:
                         pos = pygame.mouse.get_pos()
                         if self.grid.is_inside_grid(pos[0], pos[1]):
                             current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
-                            self.grid.set_cell_as_normal(current_cell[0], current_cell[1])    
+                            self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
+                            duplicate = 0
+                            index = 0
+                            for x in range (len(obs)):
+                                if current_cell == obs[x][0]:
+                                    duplicate = 1
+                                    index = x
+                                if duplicate == 1:
+                                    obs.remove(obs[index])
+                            print(obs)
+
+
+
 
                     elif self.controls.click_selected_button(pos):
                         pass

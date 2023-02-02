@@ -76,7 +76,8 @@ class Grid():
         print(self.obstacles)
 
     def set_cell_as_normal(self, pos_x, pos_y):
-        self.obstacles.remove(self.cells[pos_x][pos_y].obstacle)
+        if self.cells[pos_x][pos_y].obstacle in self.obstacles:
+            self.obstacles.remove(self.cells[pos_x][pos_y].obstacle)
         self.cells[pos_x][pos_y].remove_obstacle()
         print(self.obstacles)
     

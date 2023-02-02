@@ -26,5 +26,14 @@ class Cell:
             pass
 
     def set_obstacle(self):
-        self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate)
-        self.status = CellStatus.OBS
+        if(self.status == CellStatus.EMPTY):
+            self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate)
+            self.status = CellStatus.OBS
+
+    def remove_obstacle(self):
+        self.obstacle = None
+        self.status = CellStatus.EMPTY
+    
+    def set_image(self, count):
+        self.obstacle.on_click()
+        return self.obstacle.facing_direction

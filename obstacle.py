@@ -42,11 +42,8 @@ class Obstacle:
             pygame.display.flip()
 
     def on_click(self):
-
         facing_directions = [FacingDirection.UP, FacingDirection.RIGHT, FacingDirection.DOWN, FacingDirection.LEFT]
-
         current_facing_direction = facing_directions.index(self.facing_direction)
-
         self.facing_direction = facing_directions[(current_facing_direction + 1)%4]
 
         

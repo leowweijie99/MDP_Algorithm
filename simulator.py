@@ -32,10 +32,10 @@ class Simulator:
                     running = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        pos = pygame.mouse.get_pos()
-                        if self.grid.is_inside_grid(pos[0], pos[1]):
-                            current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
+                    pos = pygame.mouse.get_pos()
+                    if self.grid.is_inside_grid(pos[0], pos[1]): # CHECK IF CLICK INSIDE GRID FIRST
+                        current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
+                        if event.button == 1: # LEFT CLICK
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
                             direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
                             duplicate = 0
@@ -51,12 +51,7 @@ class Simulator:
                                 obs.append((current_cell, direction))
                             print("Obstacles are = ", obs)
                             click_count+=1
-
-                            
-                    if event.button == 3:
-                        pos = pygame.mouse.get_pos()
-                        if self.grid.is_inside_grid(pos[0], pos[1]):
-                            current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
+                        elif event.button == 3: # RIGHT CLICK
                             self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
                             duplicate = 0
                             index = 0
@@ -67,11 +62,7 @@ class Simulator:
                                 if duplicate == 1:
                                     obs.remove(obs[index])
                             print(obs)
-
-
-
-
-                    elif self.controls.click_selected_button(pos):
+                    elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         pass
             self.screen.fill(const.BLACK)
             self.draw_grid()

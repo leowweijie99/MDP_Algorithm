@@ -71,10 +71,15 @@ class Grid():
 
     def set_cell_as_obstacle(self, pos_x, pos_y):
         self.cells[pos_x][pos_y].set_obstacle()
-        self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
+        if self.cells[pos_x][pos_y].obstacle not in self.obstacles:
+            self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
         print(self.obstacles)
 
     def set_cell_as_normal(self, pos_x, pos_y):
+        self.obstacles.remove(self.cells[pos_x][pos_y].obstacle)
         self.cells[pos_x][pos_y].remove_obstacle()
-        #need to remove the obstacle thats been set as normal from the obstacles list
         print(self.obstacles)
+    
+    def set_cell_image_direction(self, pos_x, pos_y, count):
+        self.cells[pos_x][pos_y].set_image(count)
+        

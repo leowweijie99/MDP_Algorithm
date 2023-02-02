@@ -17,6 +17,7 @@ class Simulator:
     def run(self):
         running = True
         clock = pygame.time.Clock()
+        click_count = 0
         while (running):
             clock.tick(const.FPS)
             for event in pygame.event.get():
@@ -29,6 +30,9 @@ class Simulator:
                         if self.grid.is_inside_grid(pos[0], pos[1]):
                             current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
+                            self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
+                            click_count+=1
+
                             
                     if event.button == 3:
                         pos = pygame.mouse.get_pos()

@@ -35,3 +35,7 @@ class Cell:
     def remove_obstacle(self):
         self.obstacle = None
         self.status = CellStatus.EMPTY
+    
+    def set_image(self, count):
+        self.obstacle.on_click()
+        print(self.obstacle.facing_direction)

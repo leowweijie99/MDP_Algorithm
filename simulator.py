@@ -59,8 +59,8 @@ class Simulator:
                                 if current_cell == obs[x][0]:
                                     duplicate = 1
                                     index = x
-                                if duplicate == 1:
-                                    obs.remove(obs[index])
+                            if duplicate == 1:
+                                obs.remove(obs[index])
                             print(obs)
                     elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         pass

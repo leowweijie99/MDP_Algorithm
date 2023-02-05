@@ -2,7 +2,7 @@ import pygame
 import constants as const
 from grid import Grid
 from controls import Controls
-from robot import Robot
+from Robot import Robot
 
 class Simulator:
     def __init__(self):
@@ -73,7 +73,6 @@ class Simulator:
 
                     elif self.controls.click_selected_button(pos):
                         pass
-            self.screen.fill(const.BLACK)
             self.draw_grid()
             self.controls.draw_buttons()
             self.robot.draw_robot()

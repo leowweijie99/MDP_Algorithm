@@ -1,6 +1,6 @@
 import pygame
 import os
-from robot import Robot
+from Robot import Robot
 import constants as const
 from simulator import Simulator
 

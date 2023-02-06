@@ -61,4 +61,5 @@ class Controls:
                 elif func == "BACKWARD_RIGHT":
                     self.robot.move_backward_right()
                     return True 
+        print(self.robot.location)
         return False

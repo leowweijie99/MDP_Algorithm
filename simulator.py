@@ -1,8 +1,11 @@
 import pygame
+import math
 import constants as const
 from grid import Grid
 from controls import Controls
 from robot import Robot
+from queue import PriorityQueue
+
 
 class Simulator:
     def __init__(self):
@@ -13,6 +16,7 @@ class Simulator:
         self.screen.fill(const.BLACK)
         self.grid_from_screen_top_left = ((const.WIDTH/2) - (const.GRID_SIZE/2), 50)
         self.grid = Grid(20, 20, const.BLOCK_SIZE, self.grid_from_screen_top_left)
+        self.obs = []
 
         #Initialize Robot
         self.robot = Robot(self.screen, self.grid, 0)
@@ -24,7 +28,7 @@ class Simulator:
         running = True
         clock = pygame.time.Clock()
         click_count = 0
-        obs = []
+        self.obs = []
         while (running):
             clock.tick(const.FPS)
             for event in pygame.event.get():
@@ -40,28 +44,29 @@ class Simulator:
                             direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
                             duplicate = 0
                             index = 0
-                            for x in range (len(obs)):
-                                if current_cell == obs[x][0]:
+                            for x in range (len(self.obs)):
+                                if current_cell == self.obs[x][0]:
                                     duplicate = 1
                                     index = x
                             if duplicate == 1:
-                                obs.remove(obs[index])
-                                obs.append((current_cell, direction))
+                                self.obs.remove(self.obs[index])
+                                self.obs.append((current_cell, direction))
                             else:
-                                obs.append((current_cell, direction))
-                            print("Obstacles are = ", obs)
+                                self.obs.append((current_cell, direction))
+                            #self.print_obs()
+                            self.find_distance()
                             click_count+=1
                         elif event.button == 3: # RIGHT CLICK
                             self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
                             duplicate = 0
                             index = 0
-                            for x in range (len(obs)):
-                                if current_cell == obs[x][0]:
+                            for x in range (len(self.obs)):
+                                if current_cell == self.obs[x][0]:
                                     duplicate = 1
                                     index = x
                             if duplicate == 1:
-                                obs.remove(obs[index])
-                            print(obs)
+                                self.obs.remove(self.obs[index])
+                            #self.print_obs()
                     elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         pass
             self.screen.fill(const.BLACK)
@@ -89,3 +94,26 @@ class Simulator:
             index = font.render(str(y), False, (255, 255, 255))
             self.screen.blit(index, (start_pos[0] + const.MARGIN + (y * (const.BLOCK_SIZE + const.MARGIN)), start_pos[1]))
 
+    def print_obs(self):
+        print("Obstacles are = ", self.obs)
+
+    def get_obs(self):
+        return self.obs
+
+    def find_distance(self):
+        q = PriorityQueue()
+
+        for i in range (len(self.obs)):
+            x = self.obs[i][0][0]
+            y = self.obs[i][0][1]
+            d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
+            q.put((self.obs[i], d))
+        
+        while not q.empty():
+            next_item = q.get()
+            print(next_item)
+
+        print()
+
+        return q
+            

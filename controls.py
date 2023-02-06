@@ -3,9 +3,10 @@ from button import *
 
 class Controls:
 
-    def __init__(self, surface, robot):
+    def __init__(self, surface, simulator):
         self.surface = surface
-        self.robot = robot
+        self.simulator = simulator
+        self.robot = self.simulator.robot
         self.buttons = []
 
         # ------------- Initialize all the buttons here --------------------------------------------------
@@ -40,6 +41,7 @@ class Controls:
             if ((btn.x < mousePos[0] < btn.x + btn.width) and (btn.y < mousePos[1] < btn.y + btn.height)): # Check if mosPos is within a button's x and y coord
                 func = btn.function
                 if func == "ADD":
+                    self.simulator.find_goal_cells()
                     return True
                 elif func == "REMOVE":
                     return True

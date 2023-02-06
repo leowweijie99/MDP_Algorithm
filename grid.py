@@ -2,6 +2,7 @@ import constants as const
 import pygame
 import numpy as np
 from cell import Cell
+from cell import CellStatus
 
 MARGIN = const.MARGIN
 
@@ -40,6 +41,8 @@ class Grid():
                     color = const.NAVY_BLUE
                 else:
                     color = const.WHITE
+                if cell.status == CellStatus.GOAL:
+                    color = const.RED
                 cell_surface.fill(color)
                 if cell.obstacle != None:
                     cell.obstacle.draw_obstacle(cell_surface, 0, 0)
@@ -88,4 +91,6 @@ class Grid():
     def set_cell_image_direction(self, pos_x, pos_y, count):
         direction = self.cells[pos_x][pos_y].set_image(count)
         return(direction)
-        
+    
+    def get_cell(self, x, y):
+        return self.cells[x][y]

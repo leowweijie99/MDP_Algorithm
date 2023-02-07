@@ -37,12 +37,14 @@ class Grid():
                 x_coord = (MARGIN + self.block_size) * x + MARGIN
                 y_coord = (MARGIN + self.block_size) * (self.size_y - 1 - y) + MARGIN
                 cell_surface = pygame.Surface((self.block_size, self.block_size))
-                if cell.obstacle != None:
+                if cell.status == CellStatus.OBS:
                     color = const.NAVY_BLUE
-                else:
-                    color = const.WHITE
                 if cell.status == CellStatus.GOAL:
                     color = const.RED
+                if cell.status == CellStatus.BARRIER:
+                    color = const.GREY
+                if cell.status == CellStatus.EMPTY:
+                    color = const.WHITE
                 cell_surface.fill(color)
                 if cell.obstacle != None:
                     cell.obstacle.draw_obstacle(cell_surface, 0, 0)

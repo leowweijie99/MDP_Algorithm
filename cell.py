@@ -10,6 +10,7 @@ class CellStatus(IntEnum):
     OBS = 3 # obstacle
     VISITED_OBS = 4 # obstacle visited
     PATH = 5 # 5 and above is path to take
+    GOAL = 6
 
 class Cell:
     def __init__(self, x_coordinate, y_coordinate, status: CellStatus = CellStatus.EMPTY):
@@ -31,3 +32,6 @@ class Cell:
     def set_image(self, count):
         self.obstacle.on_click()
         return self.obstacle.facing_direction
+    
+    def set_goal(self):
+        self.status = CellStatus.GOAL

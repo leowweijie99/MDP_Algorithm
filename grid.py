@@ -51,6 +51,21 @@ class Grid():
                 self.grid_surface.blit(cell_surface, (x_coord, y_coord))
         return self.grid_surface
 
+    def get_traversible_cells(self):
+        traversible_cells = []
+
+        for x in range(self.size_x):
+            for y in range(self.size_y):
+                cell = self.cells[x][y]
+                x_coord = (MARGIN + self.block_size) * x + MARGIN
+                y_coord = (MARGIN + self.block_size) * (self.size_y - 1 - y) + MARGIN
+
+                if cell.status == CellStatus.EMPTY or cell.status == CellStatus.GOAL:
+                    cell = self.find_cell_clicked(x_coord, y_coord)
+                    traversible_cells.append(cell)
+
+        return traversible_cells
+
     def get_total_pixel_size(self) -> tuple:
         size_x_pixel = self.size_x * (self.block_size + MARGIN) + MARGIN
         size_y_pixel = self.size_y * (self.block_size + MARGIN) + MARGIN

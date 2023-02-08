@@ -11,6 +11,7 @@ class CellStatus(IntEnum):
     VISITED_OBS = 4 # obstacle visited
     PATH = 5 # 5 and above is path to take
     GOAL = 6
+    BARRIER = 7
 
 class Cell:
     def __init__(self, x_coordinate, y_coordinate, status: CellStatus = CellStatus.EMPTY):
@@ -28,6 +29,7 @@ class Cell:
     def remove_obstacle(self):
         self.obstacle = None
         self.status = CellStatus.EMPTY
+
     
     def set_image(self, count):
         self.obstacle.on_click()
@@ -35,3 +37,9 @@ class Cell:
     
     def set_goal(self):
         self.status = CellStatus.GOAL
+
+    def set_barrier(self):
+        self.status = CellStatus.BARRIER
+    
+    def set_normal(self):
+        self.status = CellStatus.EMPTY

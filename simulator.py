@@ -59,7 +59,13 @@ class Simulator:
                             barriers = self.find_barrier_cells(current_cell[0], current_cell[1])
                             for barrier in barriers:
                                 barrier.set_barrier()
+
+                            i = 0
+                            for cell in self.grid.get_traversible_cells():
+                                i += 1
+                                print(i, ". Traversible cell = ", cell)
                             click_count+=1
+                            
                         elif event.button == 3: # RIGHT CLICK
                             self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
                             duplicate = 0
@@ -73,6 +79,12 @@ class Simulator:
                             barriers = self.find_barrier_cells(current_cell[0], current_cell[1])
                             for barrier in barriers:
                                 barrier.set_normal()
+
+                            for cell in self.grid.get_traversible_cells():
+                                print("Traversible cell = ", cell)
+                            print()
+
+                            click_count+=1
                             #self.print_obs()
                     elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         print(self.robot.location)
@@ -119,7 +131,7 @@ class Simulator:
         
         while not q.empty():
             next_item = q.get()
-            print(next_item)
+            print("Goal cells are = ", next_item)
         print()
 
         return q

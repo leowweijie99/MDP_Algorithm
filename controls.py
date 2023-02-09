@@ -45,8 +45,13 @@ class Controls:
                     self.simulator.find_goal_cells()
                     return True
                 elif func == "REMOVE":
-                    path = self.simulator.on_start()
-                    print(path)
+                    i = 0
+                    paths = self.simulator.on_start()
+                    for path in paths:
+                        i+=1
+                        print("Path", i, "=", path)
+                        
+                        
                     return True
                 elif func == "FORWARD":
                     self.robot.move_forward()

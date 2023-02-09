@@ -3,8 +3,16 @@ import pygame
 import numpy as np
 from cell import Cell
 from cell import CellStatus
+from obstacle import Obstacle
+from enum import IntEnum
 
 MARGIN = const.MARGIN
+
+class FacingDirection(IntEnum):
+    UP = 0
+    RIGHT = 1
+    DOWN = 2
+    LEFT = 3
 
 class Grid():
     def __init__(self, grid_row: int, grid_col: int, block_size: int, top_left_pos: tuple):
@@ -18,6 +26,7 @@ class Grid():
         self.grid_surface = pygame.Surface(self.get_total_pixel_size())
         
         self.obstacles = []
+        self.goal_cells = []
 
         self.cells = np.empty((self.size_x, self.size_y), dtype=Cell)
         self.initialize_cells()
@@ -97,12 +106,33 @@ class Grid():
         self.cells[pos_x][pos_y].set_obstacle()
         if self.cells[pos_x][pos_y].obstacle not in self.obstacles:
             self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
+            print("Obstacles are = ", self.obstacles)
 
+    def set_cell_as_goal(self, pos_x, pos_y, direction):
+        if direction == FacingDirection.UP:
+            self.cells[pos_x][pos_y+3].set_goal()
+            self.goal_cells.append(self.cells[pos_x][pos_y+3].goal)
+            print("Colour cell red at ", pos_x, pos_y+3)
+        elif direction == FacingDirection.RIGHT:
+            self.cells[pos_x+3][pos_y].set_goal()
+            self.goal_cells.append(self.cells[pos_x+3][pos_y].goal)
+            print("Colour cell red at ", pos_x+3, pos_y)
+        elif direction == FacingDirection.DOWN:
+            self.cells[pos_x][pos_y-3].set_goal()
+            self.goal_cells.append(self.cells[pos_x][pos_y-3].goal)
+            print("Colour cell red at ", pos_x, pos_y-3)
+        elif direction == FacingDirection.LEFT:
+            self.cells[pos_x-3][pos_y].set_goal()
+            self.goal_cells.append(self.cells[pos_x-3][pos_y].goal)
+            print("Colour cell red at ", pos_x-3, pos_y)
 
     def set_cell_as_normal(self, pos_x, pos_y):
         if self.cells[pos_x][pos_y].obstacle in self.obstacles:
             self.obstacles.remove(self.cells[pos_x][pos_y].obstacle)
-        self.cells[pos_x][pos_y].remove_obstacle()
+            self.cells[pos_x][pos_y].remove_obstacle()
+        elif self.cells[pos_x][pos_y].goal in self.goal_cells:
+            self.goal_cells.remove(self.cells[pos_x][pos_y].goal)
+            self.cells[pos_x][pos_y].remove_goal()
 
     
     def set_cell_image_direction(self, pos_x, pos_y, count):

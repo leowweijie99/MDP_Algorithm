@@ -19,6 +19,7 @@ class Simulator:
         self.grid_from_screen_top_left = ((const.WIDTH/2) - (const.GRID_SIZE/2), 50)
         self.grid = Grid(20, 20, const.BLOCK_SIZE, self.grid_from_screen_top_left)
         self.obs = []
+        self.goals = []
         self.maze = []
         self.q = None
 
@@ -46,6 +47,7 @@ class Simulator:
                         if event.button == 1: # LEFT CLICK
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
                             direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
+                            self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
                             duplicate = 0
                             index = 0
                             for x in range (len(self.obs)):
@@ -81,7 +83,7 @@ class Simulator:
                             for barrier in barriers:
                                 barrier.set_normal()
 
-                            self.show_cell_statuses()
+                            #self.show_cell_statuses()
 
                             click_count+=1
                             #self.print_obs()
@@ -123,13 +125,13 @@ class Simulator:
 
     def find_distance(self):
         q = PriorityQueue()
-        goal_cells = self.find_goal_cells()
+        goal_cells = self.grid.goal_cells
 
         for i in range (len(goal_cells)):
-            x = goal_cells[i].x_coordinate
-            y = goal_cells[i].y_coordinate
+            x = goal_cells[i].x
+            y = goal_cells[i].y
             d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
-            q.put(([goal_cells[i].x_coordinate, goal_cells[i].y_coordinate], d))
+            q.put(([goal_cells[i].x, goal_cells[i].y], d))
         
         while not q.empty():
             next_item = q.get()
@@ -138,31 +140,31 @@ class Simulator:
 
         return q
     
-    def find_goal_cells(self):
-        obstacles = self.grid.obstacles
-        goal_cells = []
-        for o in obstacles:
-            x = o.x
-            y = o.y
-            cell = None
-            if o.facing_direction == FacingDirection.UP:
-                cell = self.grid.get_cell(x, y-3)
-            elif o.facing_direction == FacingDirection.RIGHT:
-                cell = self.grid.get_cell(x+3, y)
-            elif o.facing_direction == FacingDirection.DOWN:
-                cell = self.grid.get_cell(x, y+3)
-            else: # LEFT
-                cell = self.grid.get_cell(x-3, y)
-            cell.set_goal()
-            goal_cells.append(cell)
-        return goal_cells
+#    def find_goal_cells(self):
+#        obstacles = self.grid.obstacles
+#        goal_cells = []
+#        for o in obstacles:
+#            x = o.x
+#            y = o.y
+#            cell = None
+#            if o.facing_direction == FacingDirection.UP:
+#                cell = self.grid.get_cell(x, y-3)
+#            elif o.facing_direction == FacingDirection.RIGHT:
+#                cell = self.grid.get_cell(x+3, y)
+#            elif o.facing_direction == FacingDirection.DOWN:
+#                cell = self.grid.get_cell(x, y+3)
+#            else: # LEFT
+#                cell = self.grid.get_cell(x-3, y)
+#            cell.set_goal()
+#            goal_cells.append(cell)
+#        return goal_cells
 
     def on_start(self):
         end_points = []
         for obstacle in self.obs:
             end_points.append((obstacle[0][0] + 3, obstacle[0][1]))
         current_start = (1,1)
-        print(self.maze)
+        #print(self.maze)
         path = []
         i = 0
         while i < len(self.obs):

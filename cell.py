@@ -1,5 +1,6 @@
 from enum import IntEnum
 from obstacle import Obstacle
+from goal import Goal
 import pygame
 import constants as const
 
@@ -20,6 +21,7 @@ class Cell:
         self.y_coordinate = y_coordinate
         self.status = status
         self.obstacle = None
+        self.goal = None
 
     def set_obstacle(self):
         if(self.status == CellStatus.EMPTY):
@@ -36,7 +38,13 @@ class Cell:
         return self.obstacle.facing_direction
     
     def set_goal(self):
-        self.status = CellStatus.GOAL
+        if(self.status == CellStatus.EMPTY):
+            self.goal = Goal(self.x_coordinate, self.y_coordinate)
+            self.status = CellStatus.GOAL
+
+    def remove_goal(self):
+        self.goal = None
+        self.status = CellStatus.EMPTY
 
     def set_barrier(self):
         self.status = CellStatus.BARRIER

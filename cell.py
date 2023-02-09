@@ -48,8 +48,6 @@ class Cell:
         self.status = CellStatus.EMPTY
 
     def set_barrier(self):
-        if(self.status == CellStatus.EMPTY):
-            self.barrier = Barrier(self.x_coordinate, self.y_coordinate)
             self.status = CellStatus.BARRIER
     
     def set_normal(self):

@@ -44,46 +44,20 @@ class Simulator:
                     pos = pygame.mouse.get_pos()
                     if self.grid.is_inside_grid(pos[0], pos[1]): # CHECK IF CLICK IS INSIDE THE GRID
                         current_cell = self.grid.find_cell_clicked(pos[0], pos[1])
+
                         if event.button == 1: # LEFT CLICK
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
                             direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
                             self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
                             self.grid.set_cell_as_barrier(current_cell[0], current_cell[1])
-                            duplicate = 0
-                            index = 0
-                            for x in range (len(self.obs)):
-                                if current_cell == self.obs[x][0]:
-                                    duplicate = 1
-                                    index = x
-                            if duplicate == 1:
-                                self.obs.remove(self.obs[index])
-                                self.obs.append((current_cell, direction))
-                            else:
-                                self.obs.append((current_cell, direction))
-                            #self.print_obs()
                             self.q = self.find_distance()
-                            #for barrier in barriers:
-                            #    barrier.set_barrier()
+                            #self.show_cell_statuses()
+                            
                             click_count+=1
                             
                         elif event.button == 3: # RIGHT CLICK
                             self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
-                            duplicate = 0
-                            index = 0
-                            for x in range (len(self.obs)):
-                                if current_cell == self.obs[x][0]:
-                                    duplicate = 1
-                                    index = x
-                            if duplicate == 1:
-                                self.obs.remove(self.obs[index])
-                            barriers = self.find_barrier_cells(current_cell[0], current_cell[1])
-                            for barrier in barriers:
-                                barrier.set_normal()
 
-                            #self.show_cell_statuses()
-
-                            click_count+=1
-                            #self.print_obs()
                     elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         pass
             self.draw_grid()
@@ -96,7 +70,7 @@ class Simulator:
     def show_cell_statuses(self):
         for x in range(20):
             for y in range(20):
-                print(self.grid.cells[x][y].status)
+                print([x, y], "=", self.grid.cells[x][y].status)
 
     def draw_grid(self):
         self.grid_surface = self.grid.get_grid_surface()
@@ -130,31 +104,15 @@ class Simulator:
             d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
             q.put(([goal_cells[i].x, goal_cells[i].y], d))
         
+        print("Goal cells in order of distance:")
+        i = 0
         while not q.empty():
+            i+=1
             next_item = q.get()
-            print("Goal cells are = ", next_item)
+            print(i, next_item)
         print()
 
         return q
-    
-#    def find_goal_cells(self):
-#        obstacles = self.grid.obstacles
-#        goal_cells = []
-#        for o in obstacles:
-#            x = o.x
-#            y = o.y
-#            cell = None
-#            if o.facing_direction == FacingDirection.UP:
-#                cell = self.grid.get_cell(x, y-3)
-#            elif o.facing_direction == FacingDirection.RIGHT:
-#                cell = self.grid.get_cell(x+3, y)
-#            elif o.facing_direction == FacingDirection.DOWN:
-#                cell = self.grid.get_cell(x, y+3)
-#            else: # LEFT
-#                cell = self.grid.get_cell(x-3, y)
-#            cell.set_goal()
-#            goal_cells.append(cell)
-#        return goal_cells
 
     def on_start(self):
         end_points = []
@@ -172,35 +130,3 @@ class Simulator:
 
         return path
 
-    def find_barrier_cells(self, x , y):
-        barriers = []
-
-        #barriers.append(self.grid.get_cell(x, y-1))
-        #barriers.append(self.grid.get_cell(x, y-2))
-        #barriers.append(self.grid.get_cell(x, y+1))
-        #barriers.append(self.grid.get_cell(x, y+2))
-
-        #barriers.append(self.grid.get_cell(x+1, y))
-        #barriers.append(self.grid.get_cell(x+1, y-1))
-        #barriers.append(self.grid.get_cell(x+1, y-2))
-        #barriers.append(self.grid.get_cell(x+1, y+1))        
-        #barriers.append(self.grid.get_cell(x+1, y+2))
-
-        #barriers.append(self.grid.get_cell(x+2, y))
-        #barriers.append(self.grid.get_cell(x+2, y-1))
-        #barriers.append(self.grid.get_cell(x+2, y+1))
-
-        #barriers.append(self.grid.get_cell(x-1, y))
-        #barriers.append(self.grid.get_cell(x-1, y-1))
-        #barriers.append(self.grid.get_cell(x-1, y-2))
-        #barriers.append(self.grid.get_cell(x-1, y+1))
-        #barriers.append(self.grid.get_cell(x-1, y+2))
-
-        #barriers.append(self.grid.get_cell(x-2, y))
-        #barriers.append(self.grid.get_cell(x-2, y-1))
-        #barriers.append(self.grid.get_cell(x-2, y+1))
-
-        for barrier in barriers:
-            barrier.set_barrier()
-
-        return barriers

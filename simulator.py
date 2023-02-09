@@ -7,6 +7,7 @@ from Robot import Robot
 from queue import PriorityQueue
 from obstacle import Obstacle
 from obstacle import FacingDirection
+import Astar
 
 class Simulator:
     def __init__(self):
@@ -18,6 +19,8 @@ class Simulator:
         self.grid_from_screen_top_left = ((const.WIDTH/2) - (const.GRID_SIZE/2), 50)
         self.grid = Grid(20, 20, const.BLOCK_SIZE, self.grid_from_screen_top_left)
         self.obs = []
+        self.maze = []
+        self.q = None
 
         #Initialize Robot
         self.robot = Robot(self.screen, self.grid, 0)
@@ -55,15 +58,13 @@ class Simulator:
                             else:
                                 self.obs.append((current_cell, direction))
                             #self.print_obs()
-                            self.find_distance()
+                            self.q = self.find_distance()
+                            print(self.q)
                             barriers = self.find_barrier_cells(current_cell[0], current_cell[1])
                             for barrier in barriers:
                                 barrier.set_barrier()
 
                             i = 0
-                            for cell in self.grid.get_traversible_cells():
-                                i += 1
-                                print(i, ". Traversible cell = ", cell)
                             click_count+=1
                             
                         elif event.button == 3: # RIGHT CLICK
@@ -80,10 +81,6 @@ class Simulator:
                             for barrier in barriers:
                                 barrier.set_normal()
 
-                            for cell in self.grid.get_traversible_cells():
-                                print("Traversible cell = ", cell)
-                            print()
-
                             self.show_cell_statuses()
 
                             click_count+=1
@@ -93,6 +90,7 @@ class Simulator:
             self.draw_grid()
             self.controls.draw_buttons()
             self.robot.draw_robot()
+            self.maze = Astar.make_maze(self.grid)
             pygame.display.update()
         pygame.quit()
 
@@ -158,6 +156,22 @@ class Simulator:
             cell.set_goal()
             goal_cells.append(cell)
         return goal_cells
+
+    def on_start(self):
+        end_points = []
+        for obstacle in self.obs:
+            end_points.append((obstacle[0][0] + 3, obstacle[0][1]))
+        current_start = (1,1)
+        print(self.maze)
+        path = []
+        i = 0
+        while i < len(self.obs):
+            leg = Astar.Astar(self.maze, None, current_start, end_points[i], self.robot)
+            current_start = end_points[i]
+            path.append(leg)
+            i += 1
+
+        return path
 
     def find_barrier_cells(self, x , y):
         barriers = []

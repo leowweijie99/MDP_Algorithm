@@ -1,5 +1,6 @@
 # Panel for all the buttons
 from button import *
+import Astar
 
 class Controls:
 
@@ -44,6 +45,8 @@ class Controls:
                     self.simulator.find_goal_cells()
                     return True
                 elif func == "REMOVE":
+                    path = self.simulator.on_start()
+                    print(path)
                     return True
                 elif func == "FORWARD":
                     self.robot.move_forward()

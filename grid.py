@@ -60,7 +60,7 @@ class Grid():
                 x_coord = (MARGIN + self.block_size) * x + MARGIN
                 y_coord = (MARGIN + self.block_size) * (self.size_y - 1 - y) + MARGIN
 
-                if cell.status == CellStatus.EMPTY or cell.status == CellStatus.GOAL:
+                if cell.obstacle == None:
                     #cell = self.find_cell_clicked(x_coord, y_coord)
                     traversible_cells.append((cell.x_coordinate, cell.y_coordinate))
 

@@ -116,8 +116,9 @@ class Simulator:
 
     def on_start(self):
         end_points = []
-        for obstacle in self.obs:
-            end_points.append((obstacle[0][0] + 3, obstacle[0][1]))
+        for i in range (len(self.grid.goal_cells)):
+            end_points.append([self.grid.goal_cells[i].x, self.grid.goal_cells[i].y])
+            print(end_points[i])
         current_start = (1,1)
         #print(self.maze)
         path = []

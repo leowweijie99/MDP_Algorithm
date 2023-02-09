@@ -48,6 +48,7 @@ class Simulator:
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
                             direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
                             self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
+                            self.grid.set_cell_as_barrier(current_cell[0], current_cell[1])
                             duplicate = 0
                             index = 0
                             for x in range (len(self.obs)):
@@ -61,12 +62,8 @@ class Simulator:
                                 self.obs.append((current_cell, direction))
                             #self.print_obs()
                             self.q = self.find_distance()
-                            print(self.q)
-                            barriers = self.find_barrier_cells(current_cell[0], current_cell[1])
-                            for barrier in barriers:
-                                barrier.set_barrier()
-
-                            i = 0
+                            #for barrier in barriers:
+                            #    barrier.set_barrier()
                             click_count+=1
                             
                         elif event.button == 3: # RIGHT CLICK
@@ -178,26 +175,30 @@ class Simulator:
     def find_barrier_cells(self, x , y):
         barriers = []
 
-        barriers.append(self.grid.get_cell(x+1, y))
-        barriers.append(self.grid.get_cell(x+2, y))
-        barriers.append(self.grid.get_cell(x, y-1))
-        barriers.append(self.grid.get_cell(x, y-2))
-        barriers.append(self.grid.get_cell(x-1, y))
-        barriers.append(self.grid.get_cell(x-2, y))
-        barriers.append(self.grid.get_cell(x, y+1))
-        barriers.append(self.grid.get_cell(x, y+2))
-        barriers.append(self.grid.get_cell(x+1, y-1))
-        barriers.append(self.grid.get_cell(x+2, y-1))
-        barriers.append(self.grid.get_cell(x+1, y+1))
-        barriers.append(self.grid.get_cell(x+2, y+1))
-        barriers.append(self.grid.get_cell(x+1, y-2))
-        barriers.append(self.grid.get_cell(x-1, y-1))
-        barriers.append(self.grid.get_cell(x-1, y-2))
-        barriers.append(self.grid.get_cell(x-2, y-1))
-        barriers.append(self.grid.get_cell(x-1, y+1))
-        barriers.append(self.grid.get_cell(x-2, y+1))
-        barriers.append(self.grid.get_cell(x-1, y+2))
-        barriers.append(self.grid.get_cell(x+1, y+2))
+        #barriers.append(self.grid.get_cell(x, y-1))
+        #barriers.append(self.grid.get_cell(x, y-2))
+        #barriers.append(self.grid.get_cell(x, y+1))
+        #barriers.append(self.grid.get_cell(x, y+2))
+
+        #barriers.append(self.grid.get_cell(x+1, y))
+        #barriers.append(self.grid.get_cell(x+1, y-1))
+        #barriers.append(self.grid.get_cell(x+1, y-2))
+        #barriers.append(self.grid.get_cell(x+1, y+1))        
+        #barriers.append(self.grid.get_cell(x+1, y+2))
+
+        #barriers.append(self.grid.get_cell(x+2, y))
+        #barriers.append(self.grid.get_cell(x+2, y-1))
+        #barriers.append(self.grid.get_cell(x+2, y+1))
+
+        #barriers.append(self.grid.get_cell(x-1, y))
+        #barriers.append(self.grid.get_cell(x-1, y-1))
+        #barriers.append(self.grid.get_cell(x-1, y-2))
+        #barriers.append(self.grid.get_cell(x-1, y+1))
+        #barriers.append(self.grid.get_cell(x-1, y+2))
+
+        #barriers.append(self.grid.get_cell(x-2, y))
+        #barriers.append(self.grid.get_cell(x-2, y-1))
+        #barriers.append(self.grid.get_cell(x-2, y+1))
 
         for barrier in barriers:
             barrier.set_barrier()

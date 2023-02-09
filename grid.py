@@ -27,6 +27,7 @@ class Grid():
         
         self.obstacles = []
         self.goal_cells = []
+        self.barrier_cells = []
 
         self.cells = np.empty((self.size_x, self.size_y), dtype=Cell)
         self.initialize_cells()
@@ -60,20 +61,20 @@ class Grid():
                 self.grid_surface.blit(cell_surface, (x_coord, y_coord))
         return self.grid_surface
 
-    def get_traversible_cells(self):
-        traversible_cells = []
+#    def get_traversible_cells(self):
+#        traversible_cells = []
 
-        for x in range(self.size_x):
-            for y in range(self.size_y):
-                cell = self.cells[x][y]
-                x_coord = (MARGIN + self.block_size) * x + MARGIN
-                y_coord = (MARGIN + self.block_size) * (self.size_y - 1 - y) + MARGIN
+#        for x in range(self.size_x):
+#            for y in range(self.size_y):
+#                cell = self.cells[x][y]
+#                x_coord = (MARGIN + self.block_size) * x + MARGIN
+#                y_coord = (MARGIN + self.block_size) * (self.size_y - 1 - y) + MARGIN
 
-                if cell.obstacle == None:
-                    #cell = self.find_cell_clicked(x_coord, y_coord)
-                    traversible_cells.append((cell.x_coordinate, cell.y_coordinate))
+#                if cell.obstacle == None:
+#                    #cell = self.find_cell_clicked(x_coord, y_coord)
+#                    traversible_cells.append((cell.x_coordinate, cell.y_coordinate))
 
-        return traversible_cells
+#        return traversible_cells
 
     def get_total_pixel_size(self) -> tuple:
         size_x_pixel = self.size_x * (self.block_size + MARGIN) + MARGIN
@@ -106,25 +107,79 @@ class Grid():
         self.cells[pos_x][pos_y].set_obstacle()
         if self.cells[pos_x][pos_y].obstacle not in self.obstacles:
             self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
-            print("Obstacles are = ", self.obstacles)
+        for i in range (len(self.obstacles)):
+            print("Obstacles are = ", [self.obstacles[i].x, self.obstacles[i].y])
+        print()
 
     def set_cell_as_goal(self, pos_x, pos_y, direction):
         if direction == FacingDirection.UP:
             self.cells[pos_x][pos_y+3].set_goal()
             self.goal_cells.append(self.cells[pos_x][pos_y+3].goal)
-            print("Colour cell red at ", pos_x, pos_y+3)
         elif direction == FacingDirection.RIGHT:
             self.cells[pos_x+3][pos_y].set_goal()
             self.goal_cells.append(self.cells[pos_x+3][pos_y].goal)
-            print("Colour cell red at ", pos_x+3, pos_y)
         elif direction == FacingDirection.DOWN:
             self.cells[pos_x][pos_y-3].set_goal()
             self.goal_cells.append(self.cells[pos_x][pos_y-3].goal)
-            print("Colour cell red at ", pos_x, pos_y-3)
         elif direction == FacingDirection.LEFT:
             self.cells[pos_x-3][pos_y].set_goal()
             self.goal_cells.append(self.cells[pos_x-3][pos_y].goal)
-            print("Colour cell red at ", pos_x-3, pos_y)
+
+        for i in range (len(self.goal_cells)):
+            print("Goal Cells are = ", [self.goal_cells[i].x, self.goal_cells[i].y])
+        print()
+
+    def set_cell_as_barrier(self, pos_x, pos_y):
+
+        self.cells[pos_x][pos_y-1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x][pos_y-1].barrier)
+        self.cells[pos_x][pos_y-2].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x][pos_y-2].barrier)
+        self.cells[pos_x][pos_y+1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x][pos_y+1].barrier)        
+        self.cells[pos_x][pos_y+2].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x][pos_y+2].barrier)
+
+        self.cells[pos_x+1][pos_y].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+1][pos_y].barrier)
+        self.cells[pos_x+1][pos_y-1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+1][pos_y-1].barrier)
+        self.cells[pos_x+1][pos_y-2].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+1][pos_y-2].barrier)
+        self.cells[pos_x+1][pos_y+1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+1][pos_y+1].barrier)
+        self.cells[pos_x+1][pos_y+2].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+1][pos_y+2].barrier)
+            
+        self.cells[pos_x+2][pos_y].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+2][pos_y].barrier)
+        self.cells[pos_x+2][pos_y-1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+2][pos_y-1].barrier)
+        self.cells[pos_x+2][pos_y+1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x+2][pos_y+1].barrier)
+
+        self.cells[pos_x-1][pos_y].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-1][pos_y].barrier)
+        self.cells[pos_x-1][pos_y-1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-1][pos_y-1].barrier)
+        self.cells[pos_x-1][pos_y-2].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-1][pos_y-2].barrier)
+        self.cells[pos_x-1][pos_y+1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-1][pos_y+1].barrier)
+        self.cells[pos_x-1][pos_y+2].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-1][pos_y+2].barrier)   
+
+        self.cells[pos_x-2][pos_y].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-2][pos_y].barrier)
+        self.cells[pos_x-2][pos_y-1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-2][pos_y-1].barrier)
+        self.cells[pos_x-2][pos_y+1].set_barrier()
+        self.barrier_cells.append(self.cells[pos_x-2][pos_y+1].barrier)
+
+        for i in range (len(self.barrier_cells)):
+            print("Barrier Cells are = ", [self.barrier_cells[i].x, self.barrier_cells[i].y])
+        print()
+
 
     def set_cell_as_normal(self, pos_x, pos_y):
         if self.cells[pos_x][pos_y].obstacle in self.obstacles:
@@ -133,6 +188,21 @@ class Grid():
         elif self.cells[pos_x][pos_y].goal in self.goal_cells:
             self.goal_cells.remove(self.cells[pos_x][pos_y].goal)
             self.cells[pos_x][pos_y].remove_goal()
+        elif self.cells[pos_x][pos_y].barrier in self.barrier_cells:
+            self.barrier_cells.remove(self.cells[pos_x][pos_y].barrier)
+            self.cells[pos_x][pos_y].remove_barrier()
+
+        for i in range (len(self.obstacles)):
+            print("Obstacles are = ", [self.obstacles[i].x, self.obstacles[i].y])
+        print()
+        for i in range (len(self.goal_cells)):
+            print("Goal Cells are = ", [self.goal_cells[i].x, self.goal_cells[i].y])
+        print()
+        for i in range (len(self.barrier_cells)):
+            print("Barrier Cells are = ", [self.barrier_cells[i].x, self.barrier_cells[i].y])
+        print()
+        
+               
 
     
     def set_cell_image_direction(self, pos_x, pos_y, count):

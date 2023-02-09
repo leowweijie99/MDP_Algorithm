@@ -23,7 +23,6 @@ class Cell:
         self.status = status
         self.obstacle = None
         self.goal = None
-        self.barrier = None
 
     def set_obstacle(self):
         if(self.status == CellStatus.EMPTY):
@@ -52,10 +51,6 @@ class Cell:
         if(self.status == CellStatus.EMPTY):
             self.barrier = Barrier(self.x_coordinate, self.y_coordinate)
             self.status = CellStatus.BARRIER
-
-    def remove_barrier(self):
-        self.barrier = None
-        self.status = CellStatus.EMPTY
     
     def set_normal(self):
         self.status = CellStatus.EMPTY

@@ -21,7 +21,7 @@ class Cell:
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
         self.status = status
-        self.obstacle = None
+        self.obstacle: Obstacle = None
         self.goal = None
 
     def set_obstacle(self):
@@ -48,7 +48,7 @@ class Cell:
         self.status = CellStatus.EMPTY
 
     def set_barrier(self):
-            self.status = CellStatus.BARRIER
+        self.status = CellStatus.BARRIER
     
     def set_normal(self):
         self.status = CellStatus.EMPTY

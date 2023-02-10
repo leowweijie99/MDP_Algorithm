@@ -117,56 +117,19 @@ class Grid():
         print()
         
     def set_cell_as_barrier(self, pos_x, pos_y):
-
-        self.cells[pos_x][pos_y-1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x][pos_y-1].barrier)
-        self.cells[pos_x][pos_y-2].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x][pos_y-2].barrier)
-        self.cells[pos_x][pos_y+1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x][pos_y+1].barrier)        
-        self.cells[pos_x][pos_y+2].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x][pos_y+2].barrier)
-
-        self.cells[pos_x+1][pos_y].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+1][pos_y].barrier)
-        self.cells[pos_x+1][pos_y-1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+1][pos_y-1].barrier)
-        self.cells[pos_x+1][pos_y-2].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+1][pos_y-2].barrier)
-        self.cells[pos_x+1][pos_y+1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+1][pos_y+1].barrier)
-        self.cells[pos_x+1][pos_y+2].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+1][pos_y+2].barrier)
-            
-        self.cells[pos_x+2][pos_y].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+2][pos_y].barrier)
-        self.cells[pos_x+2][pos_y-1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+2][pos_y-1].barrier)
-        self.cells[pos_x+2][pos_y+1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x+2][pos_y+1].barrier)
-
-        self.cells[pos_x-1][pos_y].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-1][pos_y].barrier)
-        self.cells[pos_x-1][pos_y-1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-1][pos_y-1].barrier)
-        self.cells[pos_x-1][pos_y-2].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-1][pos_y-2].barrier)
-        self.cells[pos_x-1][pos_y+1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-1][pos_y+1].barrier)
-        self.cells[pos_x-1][pos_y+2].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-1][pos_y+2].barrier)   
-
-        self.cells[pos_x-2][pos_y].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-2][pos_y].barrier)
-        self.cells[pos_x-2][pos_y-1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-2][pos_y-1].barrier)
-        self.cells[pos_x-2][pos_y+1].set_barrier()
-        self.barrier_cells.append(self.cells[pos_x-2][pos_y+1].barrier)
-
-        print("Barrier Cells are:")
-        for i in range (len(self.barrier_cells)):
-            print(i+1, [self.barrier_cells[i].x, self.barrier_cells[i].y])
-        print()
+        o_pos = [pos_x, pos_y]
+        for x in range(-2, 3):
+            for y in range(-2, 3):
+                b_pos = [pos_x-x, pos_y-y]
+                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
+                if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
+                    c = self.cells[b_pos[0]][b_pos[1]]
+                    c.set_barrier()
+                    self.barrier_cells.append(c.barrier)
+        # print("Barrier Cells are:")
+        # for i in range (len(self.barrier_cells)):
+        #     print(i+1, [self.barrier_cells[i].x, self.barrier_cells[i].y])
+        # print()
 
 
     def set_cell_as_normal(self, pos_x, pos_y):

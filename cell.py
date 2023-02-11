@@ -23,6 +23,7 @@ class Cell:
         self.status = status
         self.obstacle: Obstacle = None
         self.goal = None
+        self.barrier = None
 
     def set_obstacle(self):
         if(self.status == CellStatus.EMPTY):

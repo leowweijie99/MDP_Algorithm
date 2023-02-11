@@ -124,8 +124,9 @@ class Grid():
                 cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
                 if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
                     c = self.cells[b_pos[0]][b_pos[1]]
-                    c.set_barrier()
-                    self.barrier_cells.append(c)
+                    if(c.status != CellStatus.BARRIER):
+                        c.set_barrier()
+                        self.barrier_cells.append(c)
 
         print("Barrier Cells are:")
         for i in range (len(self.barrier_cells)):

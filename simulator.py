@@ -7,6 +7,7 @@ from Robot import Robot
 from queue import PriorityQueue
 from obstacle import Obstacle
 from obstacle import FacingDirection
+from Astar import Astar
 import Astar
 
 class Simulator:
@@ -119,11 +120,15 @@ class Simulator:
         for obstacle in self.obs:
             end_points.append((obstacle[0][0] + 3, obstacle[0][1]))
         current_start = (1,1)
+        current_orientation = const.NORTH
         #print(self.maze)
         path = []
         i = 0
         while i < len(self.obs):
-            leg = Astar.Astar(self.maze, None, current_start, end_points[i], self.robot)
+            astar = Astar(self.grid, current_start, end_points[i])
+            astar.set_maze(self.maze)
+            leg, current_orientation = astar.make_path(current_orientation)
+            #leg = Astar(self.maze, None, current_start, end_points[i])
             current_start = end_points[i]
             path.append(leg)
             i += 1

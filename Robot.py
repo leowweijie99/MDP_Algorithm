@@ -4,12 +4,20 @@ from grid import Grid
 import time
 from pygame.math import Vector2
 from math import degrees
+from enum import IntEnum
 
 # NORTH, EAST, SOUTH, WEST
 # TURN RIGHT = +1, TURN LEFT = -1
 direction_angle = [0, 270, 180, 90]
 DISPLACEMENT = 1
 
+class RobotMoves(IntEnum):
+    FORWARD = 0
+    BACKWARD = 1
+    FORWARD_LEFT = 2
+    FORWARD_RIGHT = 3
+    BACKWARD_LEFT = 4
+    BACKWARD_RIGHT = 5
 
 class Robot:
     def __init__(self, screen: pygame.Surface, grid: Grid, angle: int):

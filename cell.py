@@ -49,7 +49,13 @@ class Cell:
         self.status = CellStatus.EMPTY
 
     def set_barrier(self):
-        self.status = CellStatus.BARRIER
+        if(self.status == CellStatus.EMPTY):
+            self.barrier = Barrier(self.x_coordinate, self.y_coordinate)
+            self.status = CellStatus.BARRIER
+
+    def remove_barrier(self):
+        self.barrier = None
+        self.status = CellStatus.EMPTY
     
     def set_normal(self):
         self.status = CellStatus.EMPTY

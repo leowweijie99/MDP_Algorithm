@@ -20,6 +20,7 @@ class Obstacle:
         self.visited = False
         self.host_square = str(x) + '-' + str(y)
         self.target = ''
+        self.goal_cell = None # This goal in obstacle is pointing towards the cell
 
     def has_been_visited(self):
         if self.visited == True:
@@ -42,4 +43,11 @@ class Obstacle:
         current_facing_direction = facing_directions.index(self.facing_direction)
         self.facing_direction = facing_directions[(current_facing_direction + 1)%4]
 
+    def set_goal_cell(self, cell):
+        self.goal_cell = cell
+        return
+    
+    def remove_goal_cell(self):
+        self.goal_cell = None
+        return
         

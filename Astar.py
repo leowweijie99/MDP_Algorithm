@@ -8,6 +8,12 @@ from Robot import RobotMoves
 import numpy as np
 from queue import PriorityQueue
 
+class CellData():
+
+    def __init__(self, position: tuple, orientation: int, status: CellStatus = CellStatus.EMPTY):
+        self.data = (position[0], position[1], orientation)
+        self.status = status
+
 class Node():
 
     def __init__(self, grid, orientation: int = None, parent = None, position: tuple = None):
@@ -55,7 +61,9 @@ class Astar:
             RobotMoves.FORWARD: const.NORTH,
             RobotMoves.BACKWARD: const.NORTH,
             RobotMoves.FORWARD_LEFT: const.WEST,
-            RobotMoves.FORWARD_RIGHT: const.EAST
+            RobotMoves.FORWARD_RIGHT: const.EAST,
+            RobotMoves.BACKWARD_RIGHT: const.WEST,
+            RobotMoves.BACKWARD_LEFT: const.EAST
         }
 
         self.statuses = [CellStatus.OBS, CellStatus.VISITED_OBS, CellStatus.BOUNDARY]
@@ -100,9 +108,7 @@ class Astar:
     def set_maze(self, maze):
         self.maze = maze
 
-    def make_path(self, start_orientation):
-
-        end_orientation = self.get_expected_goal_orientation()
+    def make_path(self, start_orientation, end_orientation):
 
         self.start = Node(self.grid, start_orientation, None, self.start)
         end_node = Node(self.grid, end_orientation, None, self.end)
@@ -125,13 +131,14 @@ class Astar:
             unvisited.pop(current_index)
             visited.append(current_node)
 
-            if current_node == end_node and self.correct_orientation(current_node.orientation):
-                return self.populate_path(current_node), current_node.orientation
+            if current_node == end_node and self.correct_orientation(current_node.orientation, end_node.orientation):
+                path = self.populate_path(current_node)
+                return path
 
-            current_node_children = self.get_children(current_node)
+            self.get_children(current_node)
 
             child: Node
-            for child in current_node_children:
+            for child in current_node.children:
                 if child not in visited:
                     continue
 
@@ -139,18 +146,6 @@ class Astar:
                 child.h = self.heuristic(child)
                 child.f = child.g + child.h
                 unvisited.append(child)
-                unvisited = self.sort_unvisited_set(unvisited)
-
-    def sort_unvisited_set(self, node_list: list, node) -> list:
-        for index, item in enumerate(node_list):
-            if item.f<node.f:
-                node = item
-                current_index = index
-
-        node_list[0] = node
-        node_list.pop(current_index)
-
-        return node_list
 
     def populate_path(self, node: Node) -> list:
         node_path = []
@@ -162,7 +157,8 @@ class Astar:
             movements.insert(0, current_node.parent_to_child_move)
             current_node = current_node.parent
 
-        return movements, node_path
+        print(movements)
+        return movements
 
     def within_boundary(self, position: tuple):
         if position[0] > const.NUM_OF_BLOCKS - 1 or position[0] < 0 or position[1] > const.NUM_OF_BLOCKS-1 or position[1] < 0:
@@ -197,13 +193,13 @@ class Astar:
 
         return child_node
 
-    def get_children(self, node: Node):
+    def get_children(self, node: Node) -> list:
         
         for movement in self.robot_movement_mapping:
 
             child = self.resultant_child_node(movement, node)
 
-            if not self.within_boundary(child):
+            if not self.within_boundary(child.position):
                 continue
 
             if not self.reachable(child):
@@ -216,16 +212,18 @@ class Astar:
         return self.path_leads_to_collision(node)
 
     def path_leads_to_collision(self, node: Node):
-        if self.within_boundary(node):
+        if not self.within_boundary(node.position):
             return self.maze_pos_status(node.position) in self.statuses
+        else:
+            False
 
     def maze_pos_status(self, position: tuple) -> CellStatus:
-        if self.maze[position[0]][position[1]] == 1:
-            return CellStatus.OBS
-        if self.maze[position[0]][position[1]] == 2: 
-            return CellStatus.BARRIER
-        if self.maze[position[0]][position[1]] == 3:
-            return CellStatus.VISITED_OBS
+            if self.maze[position[0]][position[1]] == 1:
+                return CellStatus.OBS
+            if self.maze[position[0]][position[1]] == 2: 
+                return CellStatus.BARRIER
+            if self.maze[position[0]][position[1]] == 3:
+                return CellStatus.VISITED_OBS
 
     def heuristic(self, node: Node):
         xpos, ypos = node.position[0], node.position[1]
@@ -247,10 +245,8 @@ class Astar:
         obs_orientation = self.grid.cells[self.end[0]][self.end[1]].obstacle.facing_direction
         return self.antagonistic_pairs(obs_orientation)
 
-    def correct_orientation(self, orientation) -> bool:
-        obs_orientation = self.grid.cells[self.end[0]][self.end[1]].obstacle.facing_direction
-
-        return orientation == self.antagonistic_pairs(obs_orientation)
+    def correct_orientation(self, node1: Node, node2: Node) -> bool:
+        return node1.orientation == node2.orientation
         
 
 
@@ -331,20 +327,6 @@ class Astar:
                 
                 open_list.append(child)
 '''
-def make_maze(grid):
-    maze = []
-    for x in range(const.NUM_OF_BLOCKS):
-        row = []
-        for y in range(const.NUM_OF_BLOCKS):
-            if grid.cells[x][y].obstacle == None:
-                row.append(0)
-            elif grid.cells[x][y].status == CellStatus.BARRIER:
-                row.append(2)
-            else:
-                row.append(1)
-        maze.append(row)
-
-    return maze
 
 def is_in_opposition(robot, obstacle):
     antagonistic_pairs = [("NORTH", FacingDirection.DOWN), ("SOUTH", FacingDirection.UP), 

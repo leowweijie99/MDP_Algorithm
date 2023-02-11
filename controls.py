@@ -14,7 +14,7 @@ class Controls:
         # Obstacle buttons
         btnAddObstacle = Button(self.surface, (800, 50), 120, 25, const.WHITE, "Add Obstacle", const.BLACK, "ADD")
         self.buttons.append(btnAddObstacle)
-        btnRemoveObstacle = Button(self.surface, (800, 90), 120, 25, const.WHITE, "Remove Obstacle", const.BLACK, "REMOVE")
+        btnRemoveObstacle = Button(self.surface, (800, 90), 120, 25, const.WHITE, "START", const.BLACK, "START")
         self.buttons.append(btnRemoveObstacle)
 
         # Movement buttons
@@ -44,8 +44,9 @@ class Controls:
                 if func == "ADD":
                     self.simulator.find_goal_cells()
                     return True
-                elif func == "REMOVE":
+                elif func == "START":
                     i = 0
+                    print("here")
                     paths = self.simulator.on_start()
                     for path in paths:
                         i+=1
@@ -54,6 +55,7 @@ class Controls:
                         
                     return True
                 elif func == "FORWARD":
+                    print("here")
                     self.robot.move_forward()
                     return True
                 elif func == "FORWARD_LEFT":
@@ -71,5 +73,5 @@ class Controls:
                 elif func == "BACKWARD_RIGHT":
                     self.robot.move_backward_right()
                     return True 
-        print(self.robot.location)
+        #print(self.robot.location)
         return False

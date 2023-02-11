@@ -8,7 +8,7 @@ from queue import PriorityQueue
 from obstacle import Obstacle
 from obstacle import FacingDirection
 from Astar import Astar
-import Astar
+from cell import CellStatus
 
 class Simulator:
     def __init__(self):
@@ -64,7 +64,7 @@ class Simulator:
             self.draw_grid()
             self.controls.draw_buttons()
             self.robot.draw_robot()
-            self.maze = Astar.make_maze(self.grid)
+            self.maze = self.make_maze()
             pygame.display.update()
         pygame.quit()
 
@@ -117,23 +117,45 @@ class Simulator:
 
     def on_start(self):
         end_points = []
-        print("overhere")
         for i in range (len(self.grid.goal_cells)):
-            end_points.append([self.grid.goal_cells[i].x, self.grid.goal_cells[i].y, self.grid.goal_cells[i].orientation])
-            print("1." + end_points[i])
+            end_points.append([self.grid.goal_cells[i].x, self.grid.goal_cells[i].y, self.grid.goal_cells[i].facing_direction])
+            #print("1." + end_points[i])
         current_start = (1,1)
         current_orientation = const.NORTH
         #print(self.maze)
         path = []
         i = 0
-        while i < len(self.obs):
-            astar = Astar(self.grid, current_start, end_points[i])
+        print(end_points)
+        while i < len(end_points):
+            current_endpoint = (end_points[i][0], end_points[i][1])
+            print(current_endpoint)
+            astar = Astar(self.grid, current_start, current_endpoint)
             astar.set_maze(self.maze)
             print("here")
-            leg, node_path, current_orientation = astar.make_path(current_orientation, end_points[i][2])
+            leg = astar.make_path(current_orientation, end_points[i][2])
+            print(leg)
             current_start = end_points[i]
+            current_orientation = end_points[i][2]
             path.append(leg)
             i += 1
 
+        print("hello there")
         return path
+
+    def make_maze(self):
+        maze = []
+        for x in range(const.NUM_OF_BLOCKS):
+            row = []
+            for y in range(const.NUM_OF_BLOCKS):
+                if self.grid.cells[x][y].obstacle == None:
+                    row.append(0)
+                elif self.grid.cells[x][y].status == CellStatus.BARRIER:
+                    row.append(2)
+                elif self.grid.cells[x][y].status == CellStatus.VISITED_OBS:
+                    row.append(3)
+                else:
+                    row.append(1)
+        maze.append(row)
+
+        return maze
 

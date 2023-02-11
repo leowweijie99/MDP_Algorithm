@@ -258,3 +258,17 @@ class Robot:
         self.moving = False
         self.velocity = Vector2(0.0, 0.0)
         self.angular_velocity = 0
+
+    def execute_movement(self, movement):
+        if movement == RobotMoves.FORWARD:
+            self.move_forward()
+        elif movement == RobotMoves.BACKWARD:
+            self.move_backward()
+        elif movement == RobotMoves.BACKWARD_LEFT:
+            self.move_backward_left()
+        elif movement == RobotMoves.BACKWARD_RIGHT:
+            self.move_backward_right()
+        elif movement == RobotMoves.FORWARD_LEFT:
+            self.move_forward_left()
+        elif movement == RobotMoves.FORWARD_RIGHT:
+            self.move_forward_right()

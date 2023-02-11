@@ -46,12 +46,13 @@ class Controls:
                     return True
                 elif func == "START":
                     i = 0
-                    print("here")
                     paths = self.simulator.on_start()
                     for path in paths:
                         i+=1
-                        print("Path", i, "=", path)
                         
+                    for path in paths:
+                        for movement in path:
+                            self.robot.execute_route(movement)
                         
                     return True
                 elif func == "FORWARD":

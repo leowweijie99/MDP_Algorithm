@@ -3,7 +3,7 @@ import math
 import constants as const
 from grid import Grid
 from controls import Controls
-from Robot import Robot
+from Robot import Robot, RobotMoves
 from queue import PriorityQueue
 from obstacle import Obstacle
 from obstacle import FacingDirection
@@ -23,6 +23,8 @@ class Simulator:
         self.goals = []
         self.maze = []
         self.q = None
+
+        self.path = []
 
         #Initialize Robot
         self.robot = Robot(self.screen, self.grid, 0)
@@ -125,21 +127,19 @@ class Simulator:
         #print(self.maze)
         path = []
         i = 0
-        print(end_points)
         while i < len(end_points):
             current_endpoint = (end_points[i][0], end_points[i][1])
-            print(current_endpoint)
             astar = Astar(self.grid, current_start, current_endpoint)
             astar.set_maze(self.maze)
-            print("here")
             leg = astar.make_path(current_orientation, end_points[i][2])
-            print(leg)
             current_start = end_points[i]
             current_orientation = end_points[i][2]
             path.append(leg)
             i += 1
 
-        print("hello there")
+        for leg in path:
+                self.direct_robot(leg)
+
         return path
 
     def make_maze(self):
@@ -155,7 +155,23 @@ class Simulator:
                     row.append(3)
                 else:
                     row.append(1)
-        maze.append(row)
+            maze.append(row)
 
         return maze
+
+    def direct_robot(self, path: list):
+        for movement in path:
+            if movement == RobotMoves.FORWARD:
+                self.robot.move_forward()
+            elif movement == RobotMoves.BACKWARD:
+                self.robot.move_backward()
+            elif movement == RobotMoves.BACKWARD_LEFT:
+                self.robot.move_backward_left()
+            elif movement == RobotMoves.BACKWARD_RIGHT:
+                self.robot.move_backward_right()
+            elif movement == RobotMoves.FORWARD_LEFT:
+                self.robot.move_forward_left()
+            elif movement == RobotMoves.FORWARD_RIGHT:
+                self.robot.move_forward_right()
+
 

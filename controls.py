@@ -45,14 +45,7 @@ class Controls:
                     self.simulator.find_goal_cells()
                     return True
                 elif func == "START":
-                    i = 0
-                    paths = self.simulator.on_start()
-                    for path in paths:
-                        i+=1
-                        
-                    """for path in paths:
-                        for movement in path:
-                            self.robot.execute_route(movement)"""
+                    self.simulator.on_start()
                         
                     return True
                 elif func == "FORWARD":

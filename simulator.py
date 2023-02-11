@@ -126,6 +126,7 @@ class Simulator:
         current_orientation = const.NORTH
         #print(self.maze)
         path = []
+        superpath = []
         i = 0
         while i < len(end_points):
             current_endpoint = (end_points[i][0], end_points[i][1])
@@ -138,7 +139,10 @@ class Simulator:
             i += 1
 
         for leg in path:
-                self.robot.movement_queue = leg
+            for movement in leg:
+                superpath.append(movement)
+                
+        self.robot.movement_queue = superpath
 
         return path
 

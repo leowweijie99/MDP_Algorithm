@@ -125,69 +125,34 @@ class Grid():
                 if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
                     c = self.cells[b_pos[0]][b_pos[1]]
                     c.set_barrier()
-                    self.barrier_cells.append(c.barrier)
-        # print("Barrier Cells are:")
-        # for i in range (len(self.barrier_cells)):
-        #     print(i+1, [self.barrier_cells[i].x, self.barrier_cells[i].y])
-        # print()
+                    self.barrier_cells.append(c)
 
 
     def set_cell_as_normal(self, pos_x, pos_y):
-        if self.cells[pos_x][pos_y].obstacle in self.obstacles:
-            self.obstacles.remove(self.cells[pos_x][pos_y].obstacle)
-            self.cells[pos_x][pos_y].remove_obstacle()
+        obs_cell = self.get_cell(pos_x, pos_y)
+        if (obs_cell.status != CellStatus.OBS):
+            return
+        
+        o_pos = [pos_x, pos_y]
+        # Remove Barriers
+        for x in range(-2, 3):
+            for y in range(-2, 3):
+                b_pos = [pos_x-x, pos_y-y]
+                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
+                if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
+                    c = self.cells[b_pos[0]][b_pos[1]]
+                    c.set_normal()
+                    self.barrier_cells.remove(c)
+        
+        # Remove Obstacle
+        obs_cell.set_normal()
 
-            self.barrier_cells.remove(self.cells[pos_x][pos_y-1].barrier)
-            self.cells[pos_x][pos_y-1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x][pos_y-2].barrier)
-            self.cells[pos_x][pos_y-2].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x][pos_y+1].barrier)
-            self.cells[pos_x][pos_y+1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x][pos_y+2].barrier)        
-            self.cells[pos_x][pos_y+2].remove_barrier()
+        # Remove Goal
 
-            self.barrier_cells.remove(self.cells[pos_x+1][pos_y].barrier)
-            self.cells[pos_x+1][pos_y].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x+1][pos_y-1].barrier)
-            self.cells[pos_x+1][pos_y-1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x+1][pos_y-2].barrier)
-            self.cells[pos_x+1][pos_y-2].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x+1][pos_y+1].barrier)
-            self.cells[pos_x+1][pos_y+1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x+1][pos_y+2].barrier)
-            self.cells[pos_x+1][pos_y+2].remove_barrier()
 
-            self.barrier_cells.remove(self.cells[pos_x+2][pos_y].barrier)
-            self.cells[pos_x+2][pos_y].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x+2][pos_y-1].barrier)
-            self.cells[pos_x+2][pos_y-1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x+2][pos_y+1].barrier)
-            self.cells[pos_x+2][pos_y+1].remove_barrier()
-            
-            self.barrier_cells.remove(self.cells[pos_x-1][pos_y].barrier)
-            self.cells[pos_x-1][pos_y].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x-1][pos_y-1].barrier)
-            self.cells[pos_x-1][pos_y-1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x-1][pos_y-2].barrier)
-            self.cells[pos_x-1][pos_y-2].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x-1][pos_y+1].barrier)
-            self.cells[pos_x-1][pos_y+1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x-1][pos_y+2].barrier)
-            self.cells[pos_x-1][pos_y+2].remove_barrier()
-               
-            self.barrier_cells.remove(self.cells[pos_x-2][pos_y].barrier)
-            self.cells[pos_x-2][pos_y].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x-2][pos_y-1].barrier)
-            self.cells[pos_x-2][pos_y-1].remove_barrier()
-            self.barrier_cells.remove(self.cells[pos_x-2][pos_y+1].barrier)
-            self.cells[pos_x-2][pos_y+1].remove_barrier()
-            
-        elif self.cells[pos_x][pos_y].goal in self.goal_cells:
-            self.goal_cells.remove(self.cells[pos_x][pos_y].goal)
-            self.cells[pos_x][pos_y].remove_goal()
-        elif self.cells[pos_x][pos_y].barrier in self.barrier_cells:
-            self.barrier_cells.remove(self.cells[pos_x][pos_y].barrier)
-            self.cells[pos_x][pos_y].remove_barrier()
+        # elif self.cells[pos_x][pos_y].goal in self.goal_cells:
+        #     self.goal_cells.remove(self.cells[pos_x][pos_y].goal)
+        #     self.cells[pos_x][pos_y].remove_goal()
 
         print("Obstacles are:")
         for i in range (len(self.obstacles)):
@@ -201,7 +166,7 @@ class Grid():
 
         print("Barrier Cells are:")
         for i in range (len(self.barrier_cells)):
-            print(i+1, [self.barrier_cells[i].x, self.barrier_cells[i].y])
+            print(i+1, [self.barrier_cells[i].x_coordinate, self.barrier_cells[i].y_coordinate])
         print()
         
                

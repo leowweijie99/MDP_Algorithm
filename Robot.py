@@ -9,7 +9,6 @@ from enum import IntEnum
 # NORTH, EAST, SOUTH, WEST
 # TURN RIGHT = +1, TURN LEFT = -1
 direction_angle = [0, 270, 180, 90]
-DISPLACEMENT = 1
 
 class RobotMoves(IntEnum):
     FORWARD = 0
@@ -43,6 +42,9 @@ class Robot:
         self.pixel_location = Vector2(self.get_drawing_location()[0], self.get_drawing_location()[1])
         self.rect = pygame.Rect(self.pixel_location[0], self.pixel_location[1], self.width, self.height)
 
+    def is_moving(self):
+        return self.moving
+
     def draw_robot(self):
         if self.moving: # Check if car is moving
             if self.movement_complete(self.final_pixel_location): # Reset everything if movement completed
@@ -62,25 +64,26 @@ class Robot:
     def get_drawing_location(self):
         loc = self.location
         pixel_loc = self.grid.get_pixel_measure(loc[0], 19 - loc[1]) # This gives the bottom left position instead of top left (to draw)
-        drawing_loc = [pixel_loc[0] + const.MARGIN, pixel_loc[1] - (2 * const.MARGIN_BLOCK_SIZE) + const.MARGIN] # Transform to top left
+        drawing_loc = [pixel_loc[0] - const.BLOCK_SIZE, pixel_loc[1] - const.BLOCK_SIZE] # Transform to top left
         return drawing_loc
 
-    def move_forward(self):
+    def move_forward(self, distance: int):
         if self.moving:
             return
+        distance //= 10 # original is in cm, move_foward(10) should move 1 cell
         direction = self.get_direction()
-        pixel_displacement = DISPLACEMENT * const.MARGIN_BLOCK_SIZE
+        pixel_displacement = distance * const.MARGIN_BLOCK_SIZE
         if (direction == "NORTH"):
-            self.location[1] += DISPLACEMENT
+            self.location[1] += distance
             final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] - pixel_displacement)
         elif (direction == "EAST"):
             final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1])
-            self.location[0] += DISPLACEMENT
+            self.location[0] += distance
         elif (direction == "SOUTH"):
-            self.location[1] -= DISPLACEMENT
+            self.location[1] -= distance
             final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] + pixel_displacement)
         else:
-            self.location[0] -= DISPLACEMENT
+            self.location[0] -= distance
             final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1])
 
         # Set all the variables for animation    
@@ -89,22 +92,23 @@ class Robot:
         self.set_velocity(0, -self.speed)
         self.moving = True
 
-    def move_backward(self):
+    def move_backward(self, distance: int):
         if self.moving:
             return
+        distance //= 10 # original is in cm, move_foward(10) should move 1 cell
         direction = self.get_direction()
-        pixel_displacement = DISPLACEMENT * const.MARGIN_BLOCK_SIZE
+        pixel_displacement = distance * const.MARGIN_BLOCK_SIZE
         if (direction == "NORTH"):
-            self.location[1] -= DISPLACEMENT
+            self.location[1] -= distance
             final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] + pixel_displacement)
         elif (direction == "EAST"):
-            self.location[0] -= DISPLACEMENT
+            self.location[0] -= distance
             final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1])
         elif (direction == "SOUTH"):
-            self.location[1] += DISPLACEMENT
+            self.location[1] += distance
             final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] - pixel_displacement)
         else:
-            self.location[0] += DISPLACEMENT
+            self.location[0] += distance
             final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1])
 
         # Set all the variables for animation    
@@ -213,21 +217,15 @@ class Robot:
         self.angular_velocity = self.velocity.y / pixel_displacement # pixel_displacement is turning radius, -1 turns it in the opposite direction
         return
 
+    # Rotating left means decrementing the index in the list
     def rotate_left(self):
         index = direction_angle.index(self.angle) # Current direction by index
-        # Rotating left means decrementing the index in the list
-        if (index == 0):
-            return direction_angle[3]
-        else:
-            return direction_angle[index-1]
+        return direction_angle[(index - 1) % 4]
     
+    # Rotating right means incrementing the index in the list
     def rotate_right(self):
         index = direction_angle.index(self.angle) # Current direction by index
-        # Rotating right means incrementing the index in the list
-        if (index == 3):
-            return direction_angle[0]
-        else:
-            return direction_angle[index+1]
+        return direction_angle[(index + 1) % 4]
     
     def get_direction(self):
         index = direction_angle.index(self.angle) # Current direction by index

@@ -50,9 +50,9 @@ class Controls:
                     for path in paths:
                         i+=1
                         
-                    for path in paths:
+                    """for path in paths:
                         for movement in path:
-                            self.robot.execute_route(movement)
+                            self.robot.execute_route(movement)"""
                         
                     return True
                 elif func == "FORWARD":

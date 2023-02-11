@@ -138,7 +138,7 @@ class Simulator:
             i += 1
 
         for leg in path:
-                self.direct_robot(leg)
+                self.robot.movement_queue = leg
 
         return path
 

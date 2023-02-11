@@ -52,7 +52,7 @@ class Robot:
                 print(self.location)
             else: # Continue moving
                 self.pixel_location += self.velocity.rotate(-self.angle) * 0.2
-                self.angle += degrees(self.angular_velocity) * 0.2
+                self.angle += degrees(self.angular_velocity) * 0.2         
 
         self.rect.topleft = self.pixel_location
         rotated_image = pygame.transform.rotate(self.img, self.angle)

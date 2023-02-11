@@ -127,32 +127,33 @@ class Grid():
                     c.set_barrier()
                     self.barrier_cells.append(c)
 
+        print("Barrier Cells are:")
+        for i in range (len(self.barrier_cells)):
+            print(i+1, [self.barrier_cells[i].x_coordinate, self.barrier_cells[i].y_coordinate])
+        print()
 
     def set_cell_as_normal(self, pos_x, pos_y):
-        obs_cell = self.get_cell(pos_x, pos_y)
-        if (obs_cell.status != CellStatus.OBS):
-            return
-        
-        o_pos = [pos_x, pos_y]
-        # Remove Barriers
-        for x in range(-2, 3):
-            for y in range(-2, 3):
-                b_pos = [pos_x-x, pos_y-y]
-                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
-                if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
-                    c = self.cells[b_pos[0]][b_pos[1]]
-                    c.set_normal()
-                    self.barrier_cells.remove(c)
-        
-        # Remove Obstacle
-        obs_cell.set_normal()
 
-        # Remove Goal
+        if(self.cells[pos_x][pos_y].obstacle in self.obstacles):
+            self.obstacles.remove(self.cells[pos_x][pos_y].obstacle)
+            self.cells[pos_x][pos_y].remove_obstacle()
 
+            for x in range(-2, 3):
+                for y in range(-2, 3):
+                    b_pos = [pos_x-x, pos_y-y]
+                    cell_diff = abs(pos_x - b_pos[0]) + abs(pos_y - b_pos[1])
+                    if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
+                        c = self.cells[b_pos[0]][b_pos[1]]
+                        c.remove_barrier()
+                        self.barrier_cells.remove(c)
 
-        # elif self.cells[pos_x][pos_y].goal in self.goal_cells:
-        #     self.goal_cells.remove(self.cells[pos_x][pos_y].goal)
-        #     self.cells[pos_x][pos_y].remove_goal()
+        elif self.cells[pos_x][pos_y].goal in self.goal_cells:
+            self.goal_cells.remove(self.cells[pos_x][pos_y].goal)
+            self.cells[pos_x][pos_y].remove_goal()
+
+        elif self.cells[pos_x][pos_y].barrier in self.barrier_cells:
+            self.barrier_cells.remove(self.cells[pos_x][pos_y].barrier)
+            self.cells[pos_x][pos_y].remove_barrier()
 
         print("Obstacles are:")
         for i in range (len(self.obstacles)):
@@ -170,8 +171,6 @@ class Grid():
         print()
         
                
-
-    
     def set_cell_image_direction(self, pos_x, pos_y, count):
         direction = self.cells[pos_x][pos_y].set_image(count)
         return(direction)

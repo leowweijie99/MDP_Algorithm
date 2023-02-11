@@ -161,7 +161,6 @@ class Astar:
         return movements
 
     def within_boundary(self, position: tuple):
-        print(position)
         if position[0] > self.maze_width - 1 or position[0] < 0 or position[1] > self.maze_height - 1 or position[1] < 0:
             return False
         else:
@@ -301,4 +300,4 @@ def unit_test():
     print(path)
 
 
-unit_test()
+#unit_test()

@@ -56,8 +56,7 @@ class Controls:
                         
                     return True
                 elif func == "FORWARD":
-                    print("here")
-                    self.robot.move_forward()
+                    self.robot.move_forward(10)
                     return True
                 elif func == "FORWARD_LEFT":
                     self.robot.move_forward_left()
@@ -66,7 +65,7 @@ class Controls:
                     self.robot.move_forward_right()
                     return True
                 elif func == "BACKWARD":
-                    self.robot.move_backward()
+                    self.robot.move_backward(10)
                     return True
                 elif func == "BACKWARD_LEFT":
                     self.robot.move_backward_left()

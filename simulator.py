@@ -117,9 +117,10 @@ class Simulator:
 
     def on_start(self):
         end_points = []
+        print("overhere")
         for i in range (len(self.grid.goal_cells)):
-            end_points.append([self.grid.goal_cells[i].x, self.grid.goal_cells[i].y])
-            print(end_points[i])
+            end_points.append([self.grid.goal_cells[i].x, self.grid.goal_cells[i].y, self.grid.goal_cells[i].orientation])
+            print("1." + end_points[i])
         current_start = (1,1)
         current_orientation = const.NORTH
         #print(self.maze)
@@ -128,8 +129,8 @@ class Simulator:
         while i < len(self.obs):
             astar = Astar(self.grid, current_start, end_points[i])
             astar.set_maze(self.maze)
-            leg, current_orientation = astar.make_path(current_orientation)
-            #leg = Astar(self.maze, None, current_start, end_points[i])
+            print("here")
+            leg, node_path, current_orientation = astar.make_path(current_orientation, end_points[i][2])
             current_start = end_points[i]
             path.append(leg)
             i += 1

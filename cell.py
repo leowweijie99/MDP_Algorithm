@@ -39,9 +39,9 @@ class Cell:
         self.obstacle.on_click()
         return self.obstacle.facing_direction
     
-    def set_goal(self):
+    def set_goal(self, orientation):
         if(self.status == CellStatus.EMPTY):
-            self.goal = Goal(self.x_coordinate, self.y_coordinate)
+            self.goal = Goal(self.x_coordinate, self.y_coordinate, orientation)
             self.status = CellStatus.GOAL
 
     def remove_goal(self):

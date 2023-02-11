@@ -99,16 +99,16 @@ class Grid():
 
     def set_cell_as_goal(self, pos_x, pos_y, direction):
         if direction == FacingDirection.UP:
-            self.cells[pos_x][pos_y+3].set_goal()
+            self.cells[pos_x][pos_y+3].set_goal(const.SOUTH)
             self.goal_cells.append(self.cells[pos_x][pos_y+3].goal)
         elif direction == FacingDirection.RIGHT:
-            self.cells[pos_x+3][pos_y].set_goal()
+            self.cells[pos_x+3][pos_y].set_goal(const.WEST)
             self.goal_cells.append(self.cells[pos_x+3][pos_y].goal)
         elif direction == FacingDirection.DOWN:
-            self.cells[pos_x][pos_y-3].set_goal()
+            self.cells[pos_x][pos_y-3].set_goal(const.NORTH)
             self.goal_cells.append(self.cells[pos_x][pos_y-3].goal)
         elif direction == FacingDirection.LEFT:
-            self.cells[pos_x-3][pos_y].set_goal()
+            self.cells[pos_x-3][pos_y].set_goal(const.EAST)
             self.goal_cells.append(self.cells[pos_x-3][pos_y].goal)
 
         print("Goal Cells are:")

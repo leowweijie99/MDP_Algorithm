@@ -371,7 +371,7 @@ def main():
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]]
 
     start = (0, 0)
-    end = (7, 6)
+    end = (9, 4)
 
     path = Astar(maze, None, start, end, None)
     print(path)

@@ -98,23 +98,30 @@ class Grid():
         print()
 
     def set_cell_as_goal(self, pos_x, pos_y, direction):
+        obs_cell = self.get_cell(pos_x, pos_y)
+        # Return if cell clicked is not a obstacle
+        if (obs_cell.status != CellStatus.OBS):
+            return
+        
+        goal_x, goal_y = pos_x, pos_y
         if direction == FacingDirection.UP:
-            self.cells[pos_x][pos_y+3].set_goal()
-            self.goal_cells.append(self.cells[pos_x][pos_y+3].goal)
+            goal_y += 3
         elif direction == FacingDirection.RIGHT:
-            self.cells[pos_x+3][pos_y].set_goal()
-            self.goal_cells.append(self.cells[pos_x+3][pos_y].goal)
+            goal_x += 3
         elif direction == FacingDirection.DOWN:
-            self.cells[pos_x][pos_y-3].set_goal()
-            self.goal_cells.append(self.cells[pos_x][pos_y-3].goal)
+            goal_y -= 3
         elif direction == FacingDirection.LEFT:
-            self.cells[pos_x-3][pos_y].set_goal()
-            self.goal_cells.append(self.cells[pos_x-3][pos_y].goal)
+            goal_x -= 3
 
-        print("Goal Cells are:")
-        for i in range (len(self.goal_cells)):
-            print(i+1, [self.goal_cells[i].x, self.goal_cells[i].y])
-        print()
+        # Setting the cell as a goal cell
+        goal_cell = self.get_cell(goal_x, goal_y)
+        goal_cell.set_goal()
+        self.goal_cells.append(goal_cell.goal)
+
+        # Remove previous goal if any and point the new goal back to obstacle 
+        if (obs_cell.obstacle.goal_cell != None):
+            self.remove_goal(obs_cell)
+        obs_cell.obstacle.set_goal_cell(goal_cell)
         
     def set_cell_as_barrier(self, pos_x, pos_y):
         o_pos = [pos_x, pos_y]
@@ -128,34 +135,44 @@ class Grid():
                         c.set_barrier()
                         self.barrier_cells.append(c)
 
-        print("Barrier Cells are:")
-        for i in range (len(self.barrier_cells)):
-            print(i+1, [self.barrier_cells[i].x_coordinate, self.barrier_cells[i].y_coordinate])
-        print()
-
     def set_cell_as_normal(self, pos_x, pos_y):
+        obs_cell = self.get_cell(pos_x, pos_y)
+        if (obs_cell.status != CellStatus.OBS):
+            return
+        
+        o_pos = [pos_x, pos_y]
+        # Remove Barriers
+        for x in range(-2, 3):
+            for y in range(-2, 3):
+                b_pos = [pos_x-x, pos_y-y]
+                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
+                if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
+                    c = self.cells[b_pos[0]][b_pos[1]]
+                    c.set_normal()
+                    self.barrier_cells.remove(c)
 
-        if(self.cells[pos_x][pos_y].obstacle in self.obstacles):
-            self.obstacles.remove(self.cells[pos_x][pos_y].obstacle)
-            self.cells[pos_x][pos_y].remove_obstacle()
+        # Remove Goal
+        self.remove_goal(obs_cell)
 
-            for x in range(-2, 3):
-                for y in range(-2, 3):
-                    b_pos = [pos_x-x, pos_y-y]
-                    cell_diff = abs(pos_x - b_pos[0]) + abs(pos_y - b_pos[1])
-                    if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
-                        c = self.cells[b_pos[0]][b_pos[1]]
-                        c.remove_barrier()
-                        self.barrier_cells.remove(c)
+        # Remove Obstacle
+        self.obstacles.remove(obs_cell.obstacle)
+        obs_cell.obstacle = None
+        obs_cell.set_normal()
+    
+    def remove_goal(self, obstacle_cell):
+        goal_cell = obstacle_cell.obstacle.goal_cell
+        self.goal_cells.remove(goal_cell.goal)
+        goal_cell.remove_goal()
+        goal_cell.set_normal()
 
-        elif self.cells[pos_x][pos_y].goal in self.goal_cells:
-            self.goal_cells.remove(self.cells[pos_x][pos_y].goal)
-            self.cells[pos_x][pos_y].remove_goal()
+    def set_cell_image_direction(self, pos_x, pos_y, count):
+        direction = self.cells[pos_x][pos_y].set_image(count)
+        return(direction)
+    
+    def get_cell(self, x, y):
+        return self.cells[x][y]
 
-        elif self.cells[pos_x][pos_y].barrier in self.barrier_cells:
-            self.barrier_cells.remove(self.cells[pos_x][pos_y].barrier)
-            self.cells[pos_x][pos_y].remove_barrier()
-
+    def print_all(self):
         print("Obstacles are:")
         for i in range (len(self.obstacles)):
             print(i+1, [self.obstacles[i].x, self.obstacles[i].y])

@@ -86,7 +86,7 @@ class Astar:
         }
 
         self.turn_cost = 3
-        self.straight_cost = 1
+        self.straight_cost = 5
 
         self.forward_vectors = {
             const.NORTH: np.array([0,1]),
@@ -104,6 +104,10 @@ class Astar:
 
     def set_maze(self, maze):
         self.maze = maze
+        self.maze_width = len(maze[0])
+        print(self.maze_width)
+        self.maze_height = len(maze)
+        print(self.maze_height)
 
     def make_path(self, start_orientation, end_orientation):
 
@@ -157,9 +161,11 @@ class Astar:
         return movements
 
     def within_boundary(self, position: tuple):
-        if position[0] > const.NUM_OF_BLOCKS - 1 or position[0] < 0 or position[1] > const.NUM_OF_BLOCKS-1 or position[1] < 0:
+        print(position)
+        if position[0] > self.maze_width - 1 or position[0] < 0 or position[1] > self.maze_height - 1 or position[1] < 0:
             return False
-        return True
+        else:
+            return True
 
     def get_absolute_vector(self, relative_vector: list, direction):
         rotation_matrix = self.rotation_matrices[direction]
@@ -203,20 +209,24 @@ class Astar:
             node.children.append(child)
 
     def reachable(self, node: Node) -> bool:
+        print(node.position)
+        if not self.within_boundary:
+            return False
+        
         if self.path_leads_to_collision(node):
             return False
+        
         return True
 
     def path_leads_to_collision(self, node: Node):
-        if self.within_boundary(node.position):
             return self.maze_pos_status(node.position) in self.statuses
 
     def maze_pos_status(self, position: tuple) -> CellStatus:
-            if self.maze[position[0]][position[1]] == 1:
+            if self.maze[position[1]][position[0]] == 1:
                 return CellStatus.OBS
-            if self.maze[position[0]][position[1]] == 2: 
+            if self.maze[position[1]][position[0]] == 2: 
                 return CellStatus.BARRIER
-            if self.maze[position[0]][position[1]] == 3:
+            if self.maze[position[1]][position[0]] == 3:
                 return CellStatus.VISITED_OBS
             else:
                 return CellStatus.EMPTY
@@ -287,8 +297,8 @@ def unit_test():
 
     astar.set_maze(maze)
 
-    path = astar.make_path(const.NORTH)
+    path = astar.make_path(const.NORTH, const.WEST)
     print(path)
 
 
-#unit_test()
+unit_test()

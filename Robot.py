@@ -8,7 +8,7 @@ from enum import IntEnum
 
 # NORTH, EAST, SOUTH, WEST
 # TURN RIGHT = +1, TURN LEFT = -1
-direction_angle = [0, 270, 180, 90]
+direction_angle = [0, -90, 180, 90]
 
 class RobotMoves(IntEnum):
     FORWARD = 0
@@ -77,23 +77,15 @@ class Robot:
             return
         distance //= 10 # original is in cm, move_foward(10) should move 1 cell
         direction = self.get_direction()
-        pixel_displacement = distance * const.MARGIN_BLOCK_SIZE
-        if (direction == "NORTH"):
-            self.location[1] += distance
-            final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] - pixel_displacement)
-        elif (direction == "EAST"):
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1])
-            self.location[0] += distance
-        elif (direction == "SOUTH"):
-            self.location[1] -= distance
-            final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] + pixel_displacement)
-        else:
-            self.location[0] -= distance
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1])
+
+        pixel_vector = self.transform_vector(Vector2(0, -distance), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(0, distance), self.angle)
+                                            
+        self.location += grid_vector
+        self.final_pixel_location = self.pixel_location + pixel_vector
 
         # Set all the variables for animation    
         self.final_angle = self.angle
-        self.final_pixel_location = final_pixel_pos
         self.set_velocity(0, -self.speed)
         self.moving = True
 
@@ -102,130 +94,90 @@ class Robot:
             return
         distance //= 10 # original is in cm, move_foward(10) should move 1 cell
         direction = self.get_direction()
-        pixel_displacement = distance * const.MARGIN_BLOCK_SIZE
-        if (direction == "NORTH"):
-            self.location[1] -= distance
-            final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] + pixel_displacement)
-        elif (direction == "EAST"):
-            self.location[0] -= distance
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1])
-        elif (direction == "SOUTH"):
-            self.location[1] += distance
-            final_pixel_pos = Vector2(self.pixel_location[0], self.pixel_location[1] - pixel_displacement)
-        else:
-            self.location[0] += distance
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1])
+
+        pixel_vector = self.transform_vector(Vector2(0, distance), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(0, -distance), self.angle)
+                                            
+        self.location += grid_vector
+        self.final_pixel_location = self.pixel_location + pixel_vector
 
         # Set all the variables for animation    
         self.final_angle = self.angle
-        self.final_pixel_location = final_pixel_pos
         self.set_velocity(0, self.speed)
         self.moving = True
 
-    # forward 3, right 2
     def move_forward_left(self):
         if self.moving:
             return
         direction = self.get_direction()
-        forward = 2
-        left = 3
-        forward_distance = forward * const.MARGIN_BLOCK_SIZE
-        left_distance = left * const.MARGIN_BLOCK_SIZE
-        pixel_displacement = 3 * const.MARGIN_BLOCK_SIZE
-        if (direction == "NORTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] + 3]
-        elif (direction == "EAST"):
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] + 3]
-        elif (direction == "SOUTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] - 3]
-        else:
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] - 3]
+        n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
+
+        # DEFAULT IS NORTH
+        pixel_vector = self.transform_vector(Vector2(-3, -2), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(-3, 2), self.angle)
+        
+        self.location += grid_vector
+        self.final_pixel_location = self.pixel_location + pixel_vector
 
         self.final_angle = self.rotate_left()
-        self.final_pixel_location = final_pixel_pos
         self.set_velocity(0, -self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / pixel_displacement * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / n * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
         return
     
     def move_forward_right(self):
         if self.moving:
             return
         direction = self.get_direction()
-        pixel_displacement = 3 * const.MARGIN_BLOCK_SIZE
-        right_distance = 2 * const.MARGIN_BLOCK_SIZE
-        if (direction == "NORTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] + 3]
-        elif (direction == "EAST"):
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] - 3]
-        elif (direction == "SOUTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] - 3]
-        else:
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] + 3]
+        n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
+
+        pixel_vector = self.transform_vector(Vector2(3, -2), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(3, 2), self.angle)
+        
+        self.location += grid_vector
+        self.final_pixel_location = self.pixel_location + pixel_vector
 
         self.final_angle = self.rotate_right()
-        self.final_pixel_location = final_pixel_pos
         self.set_velocity(0, -self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / pixel_displacement #pixel_displacement is turning radius
+        self.angular_velocity = self.velocity.y / n 
         return
     
     def move_backward_left(self):
         if self.moving:
             return
         direction = self.get_direction()
-        pixel_displacement = 3 * const.MARGIN_BLOCK_SIZE
-        if (direction == "NORTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] - 3]
-        elif (direction == "EAST"):
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] + 3]
-        elif (direction == "SOUTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] + 3]
-        else:
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] - 3]
+        
+        n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
 
+        # DEFAULT IS NORTH
+        pixel_vector = self.transform_vector(Vector2(-3, 2), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(-3, -2), self.angle)
+        
+        self.location += grid_vector
+        self.final_pixel_location = self.pixel_location + pixel_vector
         self.final_angle = self.rotate_right()
-        self.final_pixel_location = final_pixel_pos
         self.set_velocity(0, self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / pixel_displacement * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / n * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
         return
     
     def move_backward_right(self):
         if self.moving:
             return
         direction = self.get_direction()
-        pixel_displacement = 3 * const.MARGIN_BLOCK_SIZE
-        if (direction == "NORTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] - 3]
-        elif (direction == "EAST"):
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] + pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] - 3]
-        elif (direction == "SOUTH"):
-            final_pixel_pos = Vector2(self.pixel_location[0] - pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] - 3, self.location[1] + 3]
-        else:
-            final_pixel_pos = Vector2(self.pixel_location[0] + pixel_displacement, self.pixel_location[1] - pixel_displacement)
-            self.location = [self.location[0] + 3, self.location[1] + 3]
+        n = 2 * const.MARGIN_BLOCK_SIZE
+
+        pixel_vector = self.transform_vector(Vector2(3, 2), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(3, -2), self.angle)
+        
+        self.location += grid_vector
+        self.final_pixel_location = self.pixel_location + pixel_vector
 
         self.final_angle = self.rotate_left()
-        self.final_pixel_location = final_pixel_pos
         self.set_velocity(0, self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / pixel_displacement # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / n # pixel_displacement is turning radius, -1 turns it in the opposite direction
         return
 
     # Rotating left means decrementing the index in the list
@@ -285,3 +237,6 @@ class Robot:
     def print_queue(self):
         print(self.movement_queue[0])
         self.movement_queue.pop(0)
+
+    def transform_vector(self, vector: Vector2, angle: int):
+        return vector.rotate(angle)

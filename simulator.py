@@ -22,7 +22,7 @@ class Simulator:
         self.obs = []
         self.goals = []
         self.maze = []
-        self.q = None
+        self.q : PriorityQueue = PriorityQueue()
 
         self.path = []
 
@@ -53,7 +53,7 @@ class Simulator:
                             direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
                             self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
                             self.grid.set_cell_as_barrier(current_cell[0], current_cell[1])
-                            self.q = self.find_distance()
+                            #self.q = self.find_distance()
                             #self.show_cell_statuses()
                             
                             click_count+=1
@@ -98,30 +98,32 @@ class Simulator:
         return self.obs
 
     def find_distance(self):
-        q = PriorityQueue()
         goal_cells = self.grid.goal_cells
+        self.q = PriorityQueue()
 
         for i in range (len(goal_cells)):
             x = goal_cells[i].x
             y = goal_cells[i].y
             d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
-            q.put(([goal_cells[i].x, goal_cells[i].y], d))
-        
-        print("Goal cells in order of distance:")
-        i = 0
-        while not q.empty():
-            i+=1
-            next_item = q.get()
-            print(i, next_item)
-        print()
-
-        return q
+            self.q.put(([goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], d))
 
     def on_start(self):
+
+        goal_cells = self.grid.goal_cells
+        q = PriorityQueue()
+        for i in range (len(goal_cells)):
+            x = goal_cells[i].x
+            y = goal_cells[i].y
+            d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
+            q.put(([goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], d))
+
         end_points = []
-        for i in range (len(self.grid.goal_cells)):
-            end_points.append([self.grid.goal_cells[i].x, self.grid.goal_cells[i].y, self.grid.goal_cells[i].facing_direction])
-            #print("1." + end_points[i])
+        i = 0
+        while not q.empty():
+            temp_point = q.get()
+            end_points.append([temp_point[0][0], temp_point[0][1], temp_point[0][2]])
+            print("1." + str(end_points[i]))
+            i += 1
         print(end_points)
         current_start = (1,1)
         current_orientation = const.NORTH
@@ -165,20 +167,5 @@ class Simulator:
             maze.append(row)
 
         return maze
-
-    def direct_robot(self, path: list):
-        for movement in path:
-            if movement == RobotMoves.FORWARD:
-                self.robot.move_forward()
-            elif movement == RobotMoves.BACKWARD:
-                self.robot.move_backward()
-            elif movement == RobotMoves.BACKWARD_LEFT:
-                self.robot.move_backward_left()
-            elif movement == RobotMoves.BACKWARD_RIGHT:
-                self.robot.move_backward_right()
-            elif movement == RobotMoves.FORWARD_LEFT:
-                self.robot.move_forward_left()
-            elif movement == RobotMoves.FORWARD_RIGHT:
-                self.robot.move_forward_right()
 
 

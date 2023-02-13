@@ -69,7 +69,7 @@ class Astar:
 
         self.statuses = [CellStatus.OBS, CellStatus.VISITED_OBS, CellStatus.BOUNDARY]
 
-        self.turn_types = [RobotMoves.BACKWARD_LEFT, RobotMoves.BACKWARD_RIGHT, RobotMoves.FORWARD_LEFT, RobotMoves.FORWARD_LEFT]
+        self.turn_types = [RobotMoves.BACKWARD_LEFT, RobotMoves.BACKWARD_RIGHT, RobotMoves.FORWARD_LEFT, RobotMoves.FORWARD_RIGHT]
 
         self.rotation_matrices = {
             const.NORTH: np.array([[1,0],
@@ -89,7 +89,7 @@ class Astar:
             const.WEST: np.array([-1, 0]),
         }
 
-        self.turn_cost = 3
+        self.turn_cost = 5
         self.straight_cost = 5
 
         self.forward_vectors = {
@@ -122,7 +122,7 @@ class Astar:
     def set_obstacles(self):
         for i in range(self.maze_height):
             for j in range(self.maze_width):
-                if self.maze[i][j] == 1:
+                if self.maze[i][j] == 0:
                     self.maze_obstacles.append([i, j])
 
     def is_unreachable_from_parent(self, node: Node):
@@ -133,12 +133,15 @@ class Astar:
         child: Node = node
         displacement_from_parent = child.displacement_from_parent
 
-        if child.parent_to_child_move in self.turn_types:
+        if node.parent_to_child_move in self.turn_types:
             unit_forward_vector = self.forward_vectors[parent.orientation]
             corner_displacement = np.matmul(unit_forward_vector, displacement_from_parent) * unit_forward_vector
             corner_position = (corner_displacement[0] + parent.position[0], corner_displacement[1] + parent.position[1])
             intermediate_node = Node(self.grid, const.NORTH, None, corner_position)
-            return not self.reachable(intermediate_node)
+            if not self.reachable(intermediate_node):
+                return True
+        
+        return False
 
     def make_path(self, start_orientation, end_orientation):
 
@@ -146,6 +149,9 @@ class Astar:
         end_node = Node(self.grid, end_orientation, None, self.end)
 
         self.goal_node_set.append(end_node.data)
+        
+        self.set_adjacent_squares_to_goals(end_node)
+        print(self.goal_node_set)
 
         unvisited = []
         visited = []
@@ -163,9 +169,11 @@ class Astar:
             unvisited.pop(current_index)
             visited.append(current_node.data)
 
-            if current_node.data in self.goal_node_set:
+            frontier_node: Node = self.get_robot_frontier(current_node)
+
+            if frontier_node.data in self.goal_node_set:
                 path = self.populate_path(current_node)
-                return path
+                return path, current_node.position
 
             self.get_children(current_node)
 
@@ -174,7 +182,7 @@ class Astar:
                 if child.data in visited:
                     continue
 
-                child.g = self.get_cost(child)
+                child.g = current_node.g + self.get_cost(child)
                 child.h = self.heuristic(child)
                 child.f = child.g + child.h
                 unvisited.append(child)
@@ -191,41 +199,11 @@ class Astar:
 
         return movements
 
-    def robot_within_boundary(self, node: Node):
-        parent: Node = node.parent
-        node_data = node.data
-        within_boundary = True
-        movement = node.parent_to_child_move
-
-        if self.within_boundary(node_data[0]):
-            if node_data[0][0]-1 < 0:
-                within_boundary = False
-            elif node_data[0][0]+1 > self.maze_width-1:
-                within_boundary = False
-            elif node_data[0][1]+1 > self.maze_height-1:
-                within_boundary = False
-            elif node_data[0][1]-1 < 0:
-                within_boundary = False
-        else:
-            within_boundary = False
-
-        if movement in self.turn_types:
-            if parent.orientation == const.NORTH and parent.position[1] - 2 < 0:
-                within_boundary = False
-            elif parent.orientation == const.SOUTH and parent.position[1] + 2 > self.maze_height:
-                within_boundary = False
-            elif parent.orientation == const.WEST and parent.position[0] + 2 > self.maze_width:
-                within_boundary = False
-            elif parent.orientation == const.EAST and parent.position[0] - 2 < 0:
-                within_boundary = False
-
-        return within_boundary
-
     def within_boundary(self, position: tuple):
-        if position[0] > self.maze_width - 1 or position[0] < 0 or position[1] > self.maze_height - 1 or position[1] < 0:
+        if position[0] - 1 < 0 or position[0] + 1 > self.maze_width-1 or position[1] + 1  > self.maze_height-1 or position[1] -1 < 0:
             return False
-        else:
-            return True
+
+        return True
 
     def get_absolute_vector(self, relative_vector: list, direction):
         rotation_matrix = self.rotation_matrices[direction]
@@ -264,16 +242,12 @@ class Astar:
             if not self.within_boundary(child.position):
                 continue
 
-            if not self.robot_within_boundary:
-                continue
-
             if self.is_unreachable_from_parent(child):
                 continue
 
             node.children.append(child)
 
     def reachable(self, node: Node) -> bool:
-        print(node.position)
         if not self.within_boundary:
             return False
         
@@ -281,7 +255,8 @@ class Astar:
             return False
 
         for obstacle in self.maze_obstacles:
-            if self.squared_euclidean_distance(node.position[0], node.position[1], obstacle[0], obstacle[1]) < self.safe_squared_obstacle_distance:
+            current_distance = self.squared_euclidean_distance(node.position[0], node.position[1], obstacle[0], obstacle[1])
+            if current_distance < self.safe_squared_obstacle_distance:
                 return False
         
         return True
@@ -290,7 +265,7 @@ class Astar:
             return self.maze_pos_status(node.position) in self.statuses
 
     def maze_pos_status(self, position: tuple) -> CellStatus:
-            if self.maze[position[1]][position[0]] == 1:
+            if self.maze[position[1]][position[0]] == 0:
                 return CellStatus.OBS
             if self.maze[position[1]][position[0]] == 2: 
                 return CellStatus.BARRIER
@@ -309,27 +284,26 @@ class Astar:
 
     def set_adjacent_squares_to_goals(self, node: Node):
         key_goal_data = node.data
+        xpos, ypos = key_goal_data[0]
         additional_targets = []
 
         if key_goal_data[1] == const.NORTH:
-            additional_targets.append([(key_goal_data[0]-1, key_goal_data[1]), const.NORTH])
-            additional_targets.append([(key_goal_data[0]+1, key_goal_data[1]), const.NORTH])
+            additional_targets.append(((xpos-1, ypos), const.NORTH))
+            additional_targets.append(((xpos+1, ypos), const.NORTH))
         elif key_goal_data[1] == const.SOUTH:
-            additional_targets.append([(key_goal_data[0]-1, key_goal_data[1]), const.SOUTH])
-            additional_targets.append([(key_goal_data[0]+1, key_goal_data[1]), const.SOUTH])
+            additional_targets.append(((xpos-1, ypos), const.SOUTH))
+            additional_targets.append(((xpos+1, ypos), const.SOUTH))
         elif key_goal_data[1] == const.EAST:
-            additional_targets.append([(key_goal_data[0], key_goal_data[1]+1), const.SOUTH])
-            additional_targets.append([(key_goal_data[0], key_goal_data[1]-1), const.SOUTH])
+            additional_targets.append(((xpos, ypos+1), const.EAST))
+            additional_targets.append(((xpos, ypos-1), const.EAST))
         else:
-            additional_targets.append([(key_goal_data[0]-1, key_goal_data[1]+1), const.NORTH])
-            additional_targets.append([(key_goal_data[0]+1, key_goal_data[1]-1), const.NORTH])
+            additional_targets.append(((xpos, ypos+1), const.WEST))
+            additional_targets.append(((xpos, ypos-1), const.WEST))
 
         for target in additional_targets:
             target_node = Node(self.grid, key_goal_data[1], None, target[0])
             if self.within_boundary(target[0]) and not self.path_leads_to_collision(target_node):
                 self.goal_node_set.append(target)
-
-
 
     def get_cost(self, node: Node):
         straight_cost = 3
@@ -339,16 +313,25 @@ class Astar:
             cost = straight_cost*self.turn_cost
         else:
             cost = straight_cost
-        
+
         return cost
 
-    def get_expected_goal_orientation(self) -> int:
-        obs_orientation = self.grid.cells[self.end[0]][self.end[1]].obstacle.facing_direction
-        return self.antagonistic_pairs(obs_orientation)
+    def get_robot_frontier(self, node: Node)-> list:
+        frontier_node: Node
+        xpos = node.position[0]
+        ypos = node.position[1]
 
-    def correct_orientation(self, node1: Node, node2: Node) -> bool:
-        return node1.orientation == node2.orientation
+        if node.orientation == const.NORTH:
+            frontier_node = Node(self.grid, const.NORTH, None, (xpos, ypos+1))
+        elif node.orientation == const.SOUTH:
+            frontier_node = Node(self.grid, const.SOUTH, None, (xpos, ypos-1))
+        elif node.orientation == const.WEST:
+            frontier_node = Node(self.grid, const.WEST, None, (xpos-1, ypos))
+        elif node.orientation == const.EAST:
+            frontier_node = Node(self.grid, const.EAST, None, (xpos+1, ypos))       
 
+        return frontier_node
+ 
 def main():
     maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -375,7 +358,7 @@ def unit_test():
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -397,3 +380,75 @@ def unit_test():
 
 
 #unit_test()
+
+def boundary_test():
+    maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    start = (0,0)
+    goal = (7,4)
+    grid = Grid(20, 10, const.BLOCK_SIZE, (0,0))
+    astar = Astar(grid, start, goal)
+
+    astar.set_maze(maze)
+
+    test_coords = [(0,0), (0,9), (19,9), (19,0), (12, 0), (0, 5), (19,6), (14, 9)]
+
+    for coord in test_coords:
+        print(astar.within_boundary(coord))
+
+#boundary_test()
+
+def correct_maze(maze: list):
+    for i in range(len(maze)):
+        for j in range(len(maze[i])):
+            if maze[i][j] == 0:
+                maze[i][j] = 1
+            elif maze[i][j] == 1:
+                maze[i][j] = 0
+
+def collision_test():
+
+    maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 2, 2, 0, 0],
+            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0],
+            [0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0],
+            [0, 0, 2, 2, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+    correct_maze(maze)
+
+    grid = Grid(1, 1, const.BLOCK_SIZE, (0,0))
+
+    start = Node(grid, const.NORTH, None, (6,2))
+    end = (19, 9)
+
+    astar = Astar(grid, start.position, end)
+    astar.set_maze(maze)
+
+    maze[start.position[1]][start.position[0]] = 5
+    astar.get_children(start)
+
+    print(start.children)
+
+    child: Node
+    for child in start.children:
+        child_position = child.data[0]
+        maze[child_position[1]][child_position[0]] = 4
+        print("To get to: " + str(child.data) + " take move " + str(child.parent_to_child_move))
+
+    for row in maze:
+        print(row)
+
+#collision_test()

@@ -122,6 +122,7 @@ class Simulator:
         for i in range (len(self.grid.goal_cells)):
             end_points.append([self.grid.goal_cells[i].x, self.grid.goal_cells[i].y, self.grid.goal_cells[i].facing_direction])
             #print("1." + end_points[i])
+        print(end_points)
         current_start = (1,1)
         current_orientation = const.NORTH
         #print(self.maze)
@@ -129,11 +130,13 @@ class Simulator:
         superpath = []
         i = 0
         while i < len(end_points):
+            print(str(current_start) + ' ' + str(current_orientation))
             current_endpoint = (end_points[i][0], end_points[i][1])
             astar = Astar(self.grid, current_start, current_endpoint)
             astar.set_maze(self.maze)
-            leg = astar.make_path(current_orientation, end_points[i][2])
-            current_start = end_points[i]
+            leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+            current_start = resultant_pos
+            print(current_start)
             current_orientation = end_points[i][2]
             path.append(leg)
             i += 1
@@ -151,7 +154,7 @@ class Simulator:
         for x in range(const.NUM_OF_BLOCKS):
             row = []
             for y in range(const.NUM_OF_BLOCKS):
-                if self.grid.cells[x][y].obstacle == None:
+                if self.grid.cells[x][y].status == CellStatus.OBS:
                     row.append(0)
                 elif self.grid.cells[x][y].status == CellStatus.BARRIER:
                     row.append(2)

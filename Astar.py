@@ -89,7 +89,7 @@ class Astar:
             const.WEST: np.array([-1, 0]),
         }
 
-        self.turn_cost = 3
+        self.turn_cost = 2
         self.straight_cost = 5
 
         self.forward_vectors = {
@@ -143,6 +143,32 @@ class Astar:
         
         return False
 
+    def put_into_unvisited_queue(self, node: Node):
+        self.unvisited_queue.put((node.f, self.get_id(), node))
+
+        minimum_f = min(self.node_to_f_dict.get(node.data, np.infty), node.f)
+
+        self.node_to_f_dict[node.data] = minimum_f
+
+    def get_from_unvisited_queue(self) -> Node:
+        return self.unvisited_queue.get()[2]
+
+    def node_has_lower_f_equivalent(self, node: Node) -> bool:
+        if node.data in self.node_to_f_dict:
+            return node.f < self.node_to_f_dict[node.data]
+        
+        return False
+
+    def is_unvisited_queue_empty(self) -> bool:
+        return self.unvisited_queue.empty()
+
+    def set_id(self):
+        self.id = 0
+
+    def get_id(self):
+        self.id += 1
+        return self.id
+
     def make_path(self, start_orientation, end_orientation):
 
         self.start = Node(self.grid, start_orientation, None, self.start)
@@ -151,22 +177,29 @@ class Astar:
         self.goal_node_set.append(end_node.data)
         
         self.set_adjacent_squares_to_goals(end_node)
-        print(self.goal_node_set)
+
+        self.unvisited_queue = PriorityQueue()
+        self.node_to_f_dict = {}
 
         unvisited = []
         visited = []
 
-        unvisited.append(self.start)
+        self.set_id()
+        self.put_into_unvisited_queue(self.start)
+        #unvisited.append(self.start)
         
-        while len(unvisited) > 0:
-            current_node: Node = unvisited[0]
-            current_index = 0
-            for index, item in enumerate(unvisited):
-                if item.f<current_node.f:
-                    current_node = item
-                    current_index = index
+        while not self.is_unvisited_queue_empty(): #len(unvisited) > 0:
 
-            unvisited.pop(current_index)
+            current_node: Node = self.get_from_unvisited_queue()
+
+            #current_node: Node = unvisited[0]
+            #current_index = 0
+            #for index, item in enumerate(unvisited):
+             #   if item.f<current_node.f:
+              #      current_node = item
+               #     current_index = index
+
+            #unvisited.pop(current_index)
             visited.append(current_node.data)
 
             frontier_node: Node = self.get_robot_frontier(current_node)
@@ -185,7 +218,12 @@ class Astar:
                 child.g = current_node.g + self.get_cost(child)
                 child.h = self.heuristic(child)
                 child.f = child.g + child.h
-                unvisited.append(child)
+
+                if self.node_has_lower_f_equivalent(child):
+                    continue
+
+                self.put_into_unvisited_queue(child)
+                #unvisited.append(child)
 
     def populate_path(self, node: Node) -> list:
         node_path = []

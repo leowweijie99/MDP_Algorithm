@@ -6,6 +6,7 @@ LIGHT_NAVY_BLUE = (92, 107, 156)
 NAVY_BLUE = (0, 0, 80)
 NEON_PINK = (251, 72, 196)
 GREY = (192, 192, 192)
+GREEN = (0, 255, 0)
 
 
 

@@ -138,15 +138,17 @@ class Simulator:
             astar.set_maze(self.maze)
             leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
             current_start = resultant_pos
-            print(current_start)
             current_orientation = end_points[i][2]
             path.append(leg)
             i += 1
 
+        i = 0
         for leg in path:
             for movement in leg:
                 superpath.append(movement)
-                
+            superpath.append(end_points[i])
+            i += 1
+        
         self.robot.movement_queue = superpath
 
         return path

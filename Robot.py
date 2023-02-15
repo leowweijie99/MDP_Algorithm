@@ -5,6 +5,7 @@ import time
 from pygame.math import Vector2
 from math import degrees
 from enum import IntEnum
+from cell import CellStatus
 
 # NORTH, EAST, SOUTH, WEST
 # TURN RIGHT = +1, TURN LEFT = -1
@@ -17,6 +18,7 @@ class RobotMoves(IntEnum):
     FORWARD_RIGHT = 3
     BACKWARD_LEFT = 4
     BACKWARD_RIGHT = 5
+    SCAN = 6
 
 class Robot:
     def __init__(self, screen: pygame.Surface, grid: Grid, angle: int):
@@ -232,7 +234,9 @@ class Robot:
         elif movement == RobotMoves.FORWARD_LEFT:
             self.move_forward_left()
         elif movement == RobotMoves.FORWARD_RIGHT:
-            self.move_forward_right()
+            self.move_forward_right()   
+        elif type(movement) is list:
+            self.scan(movement)       
 
     def print_queue(self):
         print(self.movement_queue[0])
@@ -240,3 +244,10 @@ class Robot:
 
     def transform_vector(self, vector: Vector2, angle: int):
         return vector.rotate(angle)
+
+    def scan(self, position: list):
+        time.sleep(3)
+        robot_xpos = position[0]
+        robot_ypos = position[1]
+
+        self.grid.cells[robot_xpos][robot_ypos].status = CellStatus.VISITED_GOAL

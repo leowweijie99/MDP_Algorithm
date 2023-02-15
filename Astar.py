@@ -89,7 +89,7 @@ class Astar:
             const.WEST: np.array([-1, 0]),
         }
 
-        self.turn_cost = 5
+        self.turn_cost = 3
         self.straight_cost = 5
 
         self.forward_vectors = {

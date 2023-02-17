@@ -14,6 +14,7 @@ class CellStatus(IntEnum):
     PATH = 5 # 5 and above is path to take
     GOAL = 6
     BARRIER = 7
+    VISITED_GOAL = 8
 
 class Cell:
     def __init__(self, x_coordinate, y_coordinate, status: CellStatus = CellStatus.EMPTY):

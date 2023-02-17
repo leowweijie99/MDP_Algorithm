@@ -55,6 +55,8 @@ class Grid():
                     color = const.GREY
                 if cell.status == CellStatus.EMPTY:
                     color = const.WHITE
+                if cell.status == CellStatus.VISITED_GOAL:
+                    color = const.GREEN
                 cell_surface.fill(color)
                 if cell.obstacle != None:
                     cell.obstacle.draw_obstacle(cell_surface, 0, 0)
@@ -132,7 +134,7 @@ class Grid():
         for x in range(-2, 3):
             for y in range(-2, 3):
                 b_pos = [pos_x-x, pos_y-y]
-                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
+                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacle
                 if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
                     c = self.get_cell(b_pos[0], b_pos[1])
                     if(c.status != CellStatus.BARRIER):

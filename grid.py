@@ -123,15 +123,17 @@ class Grid():
 
         if(goal_x>20 or goal_x <-1 or goal_y>20 or goal_y<-1):
             print("Goal out of bounds")
+            self.remove_goal(obs_cell)
         else:
             goal_cell = self.get_cell(goal_x, goal_y)
             goal_cell.set_goal(orientation)
             self.goal_cells.append(goal_cell.goal)
             if (obs_cell.obstacle.goal_cell != None):
-                self.remove_goal(obs_cell)
+                try:
+                    self.remove_goal(obs_cell)
+                except:
+                    print()
             obs_cell.obstacle.set_goal_cell(goal_cell)
-
-        # Remove previous goal if any and point the new goal back to obstacle 
 
 
         
@@ -213,3 +215,4 @@ class Grid():
         if (y > 19):
             y = y % 20
         return self.cells[x][y]
+            

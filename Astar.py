@@ -90,7 +90,7 @@ class Astar:
         }
 
         self.turn_cost = 3
-        self.straight_cost = 5
+        self.straight_cost = 1
 
         self.forward_vectors = {
             const.NORTH: np.array([0,1]),
@@ -353,6 +353,32 @@ class Astar:
             cost = straight_cost
 
         return cost
+
+    def set_default_maze(self, d1, d2):
+        self.maze = []
+
+        for i in range(d1):
+            row = []
+            for j in range(d2):
+                row.append(1)
+            self.maze.append(row)
+
+    def make_maze(self, grid: Grid):
+        maze = []
+        for x in range(const.NUM_OF_BLOCKS):
+            row = []
+            for y in range(const.NUM_OF_BLOCKS):
+                if grid.cells[x][y].status == CellStatus.OBS:
+                    row.append(0)
+                elif grid.cells[x][y].status == CellStatus.BARRIER:
+                    row.append(2)
+                elif grid.cells[x][y].status == CellStatus.VISITED_OBS:
+                    row.append(3)
+                else:
+                    row.append(1)
+            maze.append(row)
+
+        return maze
 
     def get_robot_frontier(self, node: Node)-> list:
         frontier_node: Node

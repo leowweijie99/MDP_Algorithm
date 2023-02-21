@@ -120,26 +120,33 @@ class Grid():
             orientation = const.EAST
 
         # Setting the cell as a goal cell
-        goal_cell = self.get_cell(goal_x, goal_y)
-        goal_cell.set_goal(orientation)
-        self.goal_cells.append(goal_cell.goal)
+
+        if(goal_x>20 or goal_x <-1 or goal_y>20 or goal_y<-1):
+            print("Goal out of bounds")
+        else:
+            goal_cell = self.get_cell(goal_x, goal_y)
+            goal_cell.set_goal(orientation)
+            self.goal_cells.append(goal_cell.goal)
+            if (obs_cell.obstacle.goal_cell != None):
+                self.remove_goal(obs_cell)
+            obs_cell.obstacle.set_goal_cell(goal_cell)
 
         # Remove previous goal if any and point the new goal back to obstacle 
-        if (obs_cell.obstacle.goal_cell != None):
-            self.remove_goal(obs_cell)
-        obs_cell.obstacle.set_goal_cell(goal_cell)
+
+
         
     def set_cell_as_barrier(self, pos_x, pos_y):
         o_pos = [pos_x, pos_y]
         for x in range(-2, 3):
             for y in range(-2, 3):
                 b_pos = [pos_x-x, pos_y-y]
-                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacle
-                if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
-                    c = self.get_cell(b_pos[0], b_pos[1])
-                    if(c.status != CellStatus.BARRIER):
-                        c.set_barrier()
-                        self.barrier_cells.append(c)
+                if(b_pos[0]<20 and b_pos[0]>-1 and b_pos[1]<20 and b_pos[1]>-1):
+                    cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacle
+                    if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
+                        c = self.get_cell(b_pos[0], b_pos[1])
+                        if(c.status != CellStatus.BARRIER):
+                            c.set_barrier()
+                            self.barrier_cells.append(c)
 
     def set_cell_as_normal(self, pos_x, pos_y):
         obs_cell = self.get_cell(pos_x, pos_y)
@@ -151,11 +158,12 @@ class Grid():
         for x in range(-2, 3):
             for y in range(-2, 3):
                 b_pos = [pos_x-x, pos_y-y]
-                cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
-                if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
-                    c = self.get_cell(b_pos[0], b_pos[1])
-                    c.set_normal()
-                    self.barrier_cells.remove(c)
+                if(b_pos[0]<20 and b_pos[0]>-1 and b_pos[1]<20 and b_pos[1]>-1):
+                    cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
+                    if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
+                        c = self.get_cell(b_pos[0], b_pos[1])
+                        c.set_normal()
+                        self.barrier_cells.remove(c)
 
         # Remove Goal
         self.remove_goal(obs_cell)

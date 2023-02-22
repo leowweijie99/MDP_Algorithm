@@ -51,15 +51,16 @@ class Simulator:
                         if event.button == 1: # LEFT CLICK
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
                             direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
-                            self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
-                            self.grid.set_cell_as_barrier(current_cell[0], current_cell[1])
+                            #self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
+                            #self.grid.set_cell_as_barrier(current_cell[0], current_cell[1])
                             #self.q = self.find_distance()
                             #self.show_cell_statuses()
                             
                             click_count+=1
                             
                         elif event.button == 3: # RIGHT CLICK
-                            self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
+                            #self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
+                            pass
 
                     elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         pass
@@ -108,6 +109,10 @@ class Simulator:
             self.q.put(([goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], d))
 
     def on_start(self):
+        tried = False
+        for obstacle in self.grid.obstacles:
+            self.grid.set_cell_as_goal(obstacle.x, obstacle.y, obstacle.facing_direction)
+            #self.grid.set_cell_as_barrier(obstacle.x, obstacle.y)
 
         goal_cells = self.grid.goal_cells
         q = PriorityQueue()
@@ -122,7 +127,7 @@ class Simulator:
         while not q.empty():
             temp_point = q.get()
             end_points.append([temp_point[0][0], temp_point[0][1], temp_point[0][2]])
-            print("1." + str(end_points[i]))
+            print(i+1 , str(end_points[i]))
             i += 1
         print(end_points)
         current_start = (1,1)
@@ -136,18 +141,23 @@ class Simulator:
             current_endpoint = (end_points[i][0], end_points[i][1])
             astar = Astar(self.grid, current_start, current_endpoint)
             astar.set_maze(self.maze)
-            leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+            try:
+                leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+            except:
+                print("Path not found")
+            print(leg)
+            print(resultant_pos)
             current_start = resultant_pos
             current_orientation = end_points[i][2]
             path.append(leg)
             i += 1
 
-        i = 0
+        i=0
         for leg in path:
             for movement in leg:
                 superpath.append(movement)
             superpath.append(end_points[i])
-            i += 1
+            i+=1
         
         self.robot.movement_queue = superpath
 

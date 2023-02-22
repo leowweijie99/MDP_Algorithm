@@ -24,6 +24,8 @@ class Simulator:
         self.maze = []
         self.q : PriorityQueue = PriorityQueue()
 
+        self.clock = pygame.time.Clock()
+
         self.path = []
 
         #Initialize Robot
@@ -107,6 +109,27 @@ class Simulator:
             d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
             self.q.put(([goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], d))
 
+    def get_closest(self, planning_current_position) -> tuple:
+
+        goal_cells = self.grid.goal_cells
+        index = 0
+        q = PriorityQueue()
+        for i in range(len(goal_cells)):
+            d = math.sqrt((goal_cells[i].x-planning_current_position[0])**2 + (goal_cells[i].y-planning_current_position[1])**2)
+            q.put((d, i, goal_cells[i]))
+
+        closest_goal_cell = q.get()
+        print(closest_goal_cell)
+        x = closest_goal_cell[2].x
+        y = closest_goal_cell[2].y
+        orientation = closest_goal_cell[2].facing_direction
+
+        self.grid.goal_cells.remove(closest_goal_cell[2])
+
+        print((x, y, orientation))
+
+        return (x, y, orientation)
+
     def on_start(self):
 
         goal_cells = self.grid.goal_cells
@@ -119,10 +142,11 @@ class Simulator:
 
         end_points = []
         i = 0
-        while not q.empty():
+        while not q.empty(): #len(self.grid.goal_cells) > 0:
             temp_point = q.get()
+            print(temp_point)
             end_points.append([temp_point[0][0], temp_point[0][1], temp_point[0][2]])
-            print("1." + str(end_points[i]))
+            #print("1." + str(end_points[i]))
             i += 1
         print(end_points)
         current_start = (1,1)
@@ -141,6 +165,20 @@ class Simulator:
             current_orientation = end_points[i][2]
             path.append(leg)
             i += 1
+
+        reached = []
+        '''while len(self.grid.goal_cells) > 0:
+            print(str(current_start) + ' ' + str(current_orientation))
+            current_endpoint = self.get_closest(current_start)
+            current_endpoint_coords = (current_endpoint[0], current_endpoint[1])
+            current_endpoint_orientation = current_endpoint[2]
+            astar = Astar(self.grid, current_start, current_endpoint_coords)
+            astar.set_maze(self.maze)
+            leg, resultant_pos = astar.make_path(current_orientation, current_endpoint_orientation)
+            current_start = resultant_pos
+            current_orientation = current_endpoint_orientation
+            path.append(leg)
+            reached.append(current_endpoint)'''
 
         i = 0
         for leg in path:

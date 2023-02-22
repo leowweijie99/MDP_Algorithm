@@ -46,7 +46,6 @@ class Controls:
                     return True
                 elif func == "START":
                     self.simulator.on_start()
-                        
                     return True
                 elif func == "FORWARD":
                     self.robot.move_forward(10)

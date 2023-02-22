@@ -121,7 +121,7 @@ class Grid():
 
         # Setting the cell as a goal cell
 
-        if(goal_x>20 or goal_x <-1 or goal_y>20 or goal_y<-1):
+        if(goal_x>20 or goal_x <=-1 or goal_y>20 or goal_y<=-1):
             print("Goal out of bounds")
             self.remove_goal(obs_cell)
         else:

@@ -135,32 +135,34 @@ class Simulator:
         path = []
         superpath = []
         i = 0
+        to_execute = []
         while i < len(end_points):
             print(str(current_start) + ' ' + str(current_orientation))
             current_endpoint = (end_points[i][0], end_points[i][1])
             astar = Astar(self.grid, current_start, current_endpoint)
             astar.set_maze(self.maze)
+            tried = False
             try:
                 leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+                current_start = resultant_pos
+                current_orientation = end_points[i][2]
+                path.append(leg)
+                to_execute.append(end_points[i])
+                i += 1
             except:
-                print("Path not found")
-                break
-            print(leg)
-            print(resultant_pos)
-            current_start = resultant_pos
-            current_orientation = end_points[i][2]
-            path.append(leg)
-            i += 1
+                print("Path not found to ", end_points[i])
+                i += 1
 
-        i=0
+
+        print(end_points)
+        i = 0
         for leg in path:
             for movement in leg:
                 superpath.append(movement)
-            superpath.append(end_points[i])
-            i+=1
-        
-        self.robot.movement_queue = superpath
+            superpath.append(to_execute[i])
+            i += 1
 
+        self.robot.movement_queue = superpath
         return path
 
     def make_maze(self):

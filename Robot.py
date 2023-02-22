@@ -223,6 +223,7 @@ class Robot:
 
     def execute_movement(self, movement):
         print("executing " + str(movement))
+        time.sleep(1)
         if movement == RobotMoves.FORWARD:
             self.move_forward(10)
         elif movement == RobotMoves.BACKWARD:

@@ -49,10 +49,10 @@ class Astar:
         self.robot_movement_mapping = {
             RobotMoves.FORWARD: [0,1],
             RobotMoves.BACKWARD: [0, -1],
-            RobotMoves.FORWARD_LEFT: [-self.TURNING_RADIUS, 2],
-            RobotMoves.BACKWARD_LEFT: [-self.TURNING_RADIUS, -2],
-            RobotMoves.FORWARD_RIGHT: [self.TURNING_RADIUS, 2],
-            RobotMoves.BACKWARD_RIGHT: [self.TURNING_RADIUS, -2]
+            RobotMoves.FORWARD_LEFT: [-self.TURNING_RADIUS, 1],
+            RobotMoves.BACKWARD_LEFT: [-1, -self.TURNING_RADIUS],
+            RobotMoves.FORWARD_RIGHT: [self.TURNING_RADIUS, 1],
+            RobotMoves.BACKWARD_RIGHT: [1, -self.TURNING_RADIUS]
         }
 
         self.maze_obstacles = []

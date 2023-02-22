@@ -61,8 +61,7 @@ class Simulator:
                             click_count+=1
                             
                         elif event.button == 3: # RIGHT CLICK
-                            #self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
-                            pass
+                            self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
 
                     elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         pass
@@ -135,7 +134,7 @@ class Simulator:
         tried = False
         for obstacle in self.grid.obstacles:
             self.grid.set_cell_as_goal(obstacle.x, obstacle.y, obstacle.facing_direction)
-            #self.grid.set_cell_as_barrier(obstacle.x, obstacle.y)
+            self.grid.set_cell_as_barrier(obstacle.x, obstacle.y)
 
         goal_cells = self.grid.goal_cells
         q = PriorityQueue()
@@ -160,6 +159,7 @@ class Simulator:
         path = []
         superpath = []
         i = 0
+        to_execute = []
         for row in self.maze:
             print(row)
         while i < len(end_points):
@@ -167,41 +167,28 @@ class Simulator:
             current_endpoint = (end_points[i][0], end_points[i][1])
             astar = Astar(self.grid, current_start, current_endpoint)
             astar.set_maze(self.maze)
+            tried = False
             try:
                 leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+                current_start = resultant_pos
+                current_orientation = end_points[i][2]
+                path.append(leg)
+                to_execute.append(end_points[i])
+                i += 1
             except:
-                print("Path not found")
-                break
-            print(leg)
-            print(resultant_pos)
-            current_start = resultant_pos
-            current_orientation = end_points[i][2]
-            path.append(leg)
-            i += 1
+                print("Path not found to ", end_points[i])
+                i += 1
 
-        reached = []
-        '''while len(self.grid.goal_cells) > 0:
-            print(str(current_start) + ' ' + str(current_orientation))
-            current_endpoint = self.get_closest(current_start)
-            current_endpoint_coords = (current_endpoint[0], current_endpoint[1])
-            current_endpoint_orientation = current_endpoint[2]
-            astar = Astar(self.grid, current_start, current_endpoint_coords)
-            astar.set_maze(self.maze)
-            leg, resultant_pos = astar.make_path(current_orientation, current_endpoint_orientation)
-            current_start = resultant_pos
-            current_orientation = current_endpoint_orientation
-            path.append(leg)
-            reached.append(current_endpoint)'''
 
-        i=0
+        print(end_points)
+        i = 0
         for leg in path:
             for movement in leg:
                 superpath.append(movement)
-            superpath.append(end_points[i])
-            i+=1
-        
-        self.robot.movement_queue = superpath
+            superpath.append(to_execute[i])
+            i += 1
 
+        self.robot.movement_queue = superpath
         return path
 
     def make_maze(self):

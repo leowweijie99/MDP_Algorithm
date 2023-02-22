@@ -121,7 +121,7 @@ class Grid():
 
         # Setting the cell as a goal cell
 
-        if(goal_x>20 or goal_x <-1 or goal_y>20 or goal_y<-1):
+        if(goal_x>20 or goal_x <=-1 or goal_y>20 or goal_y<=-1):
             print("Goal out of bounds")
             self.remove_goal(obs_cell)
         else:
@@ -151,33 +151,42 @@ class Grid():
     def set_cell_as_normal(self, pos_x, pos_y):
         obs_cell = self.get_cell(pos_x, pos_y)
         if (obs_cell.status != CellStatus.OBS):
-            return
-        
+            return        
+
         o_pos = [pos_x, pos_y]
         # Remove Barriers
-        for x in range(-2, 3):
-            for y in range(-2, 3):
-                b_pos = [pos_x-x, pos_y-y]
-                if(b_pos[0]<20 and b_pos[0]>-1 and b_pos[1]<20 and b_pos[1]>-1):
-                    cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
-                    if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
-                        c = self.get_cell(b_pos[0], b_pos[1])
-                        c.set_normal()
-                        self.barrier_cells.remove(c)
+
+        try:
+            for x in range(-2, 3):
+                for y in range(-2, 3):
+                    b_pos = [pos_x-x, pos_y-y]
+                    if(b_pos[0]<20 and b_pos[0]>-1 and b_pos[1]<20 and b_pos[1]>-1):
+                        cell_diff = abs(o_pos[0] - b_pos[0]) + abs(o_pos[1] - b_pos[1]) # Get the distance between current cell & the obstacl
+                        if ( cell_diff < 4 and cell_diff > 0): # Corners diff is 4, Obstacle itself diff is 0
+                            c = self.get_cell(b_pos[0], b_pos[1])
+                            c.set_normal()
+                            self.barrier_cells.remove(c)
+        except:
+            pass
 
         # Remove Goal
-        self.remove_goal(obs_cell)
+        #self.remove_goal(obs_cell)
 
         # Remove Obstacle
         self.obstacles.remove(obs_cell.obstacle)
         obs_cell.obstacle = None
         obs_cell.set_normal()
+
     
     def remove_goal(self, obstacle_cell):
         goal_cell = obstacle_cell.obstacle.goal_cell
-        self.goal_cells.remove(goal_cell.goal)
-        goal_cell.remove_goal()
-        goal_cell.set_normal()
+        try:
+            self.goal_cells.remove(goal_cell.goal)
+            goal_cell.remove_goal()
+            goal_cell.set_normal()
+        except:
+            pass
+
 
     def set_cell_image_direction(self, pos_x, pos_y, count):
         direction = self.cells[pos_x][pos_y].set_image(count)

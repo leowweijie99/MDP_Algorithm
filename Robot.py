@@ -49,6 +49,7 @@ class Robot:
 
     def draw_robot(self):
         if self.moving: # Check if car is moving
+            self.update_robot()
             if self.movement_complete(self.final_pixel_location): # Reset everything if movement completed
                 self.update_robot()
                 print(self.location)
@@ -115,8 +116,8 @@ class Robot:
         n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
 
         # DEFAULT IS NORTH
-        pixel_vector = self.transform_vector(Vector2(-3, -2), -self.angle) * const.MARGIN_BLOCK_SIZE
-        grid_vector = self.transform_vector(Vector2(-3, 2), self.angle)
+        pixel_vector = self.transform_vector(Vector2(-3, -1), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(-3, 1), self.angle)
         
         self.location += grid_vector
         self.final_pixel_location = self.pixel_location + pixel_vector
@@ -133,8 +134,8 @@ class Robot:
         direction = self.get_direction()
         n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
 
-        pixel_vector = self.transform_vector(Vector2(3, -2), -self.angle) * const.MARGIN_BLOCK_SIZE
-        grid_vector = self.transform_vector(Vector2(3, 2), self.angle)
+        pixel_vector = self.transform_vector(Vector2(3, -1), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(3, 1), self.angle)
         
         self.location += grid_vector
         self.final_pixel_location = self.pixel_location + pixel_vector
@@ -153,8 +154,8 @@ class Robot:
         n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
 
         # DEFAULT IS NORTH
-        pixel_vector = self.transform_vector(Vector2(-3, 2), -self.angle) * const.MARGIN_BLOCK_SIZE
-        grid_vector = self.transform_vector(Vector2(-3, -2), self.angle)
+        pixel_vector = self.transform_vector(Vector2(-1, 3), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(-1, -3), self.angle)
         
         self.location += grid_vector
         self.final_pixel_location = self.pixel_location + pixel_vector
@@ -170,9 +171,8 @@ class Robot:
         direction = self.get_direction()
         n = 2 * const.MARGIN_BLOCK_SIZE
 
-        pixel_vector = self.transform_vector(Vector2(3, 2), -self.angle) * const.MARGIN_BLOCK_SIZE
-        grid_vector = self.transform_vector(Vector2(3, -2), self.angle)
-        
+        pixel_vector = self.transform_vector(Vector2(1, 3), -self.angle) * const.MARGIN_BLOCK_SIZE
+        grid_vector = self.transform_vector(Vector2(1, -3), self.angle)
         self.location += grid_vector
         self.final_pixel_location = self.pixel_location + pixel_vector
 

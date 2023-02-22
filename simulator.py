@@ -59,8 +59,7 @@ class Simulator:
                             click_count+=1
                             
                         elif event.button == 3: # RIGHT CLICK
-                            #self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
-                            pass
+                            self.grid.set_cell_as_normal(current_cell[0], current_cell[1])
 
                     elif self.controls.click_selected_button(pos): # CHECK BUTTONS
                         pass
@@ -112,7 +111,7 @@ class Simulator:
         tried = False
         for obstacle in self.grid.obstacles:
             self.grid.set_cell_as_goal(obstacle.x, obstacle.y, obstacle.facing_direction)
-            #self.grid.set_cell_as_barrier(obstacle.x, obstacle.y)
+            self.grid.set_cell_as_barrier(obstacle.x, obstacle.y)
 
         goal_cells = self.grid.goal_cells
         q = PriorityQueue()
@@ -145,6 +144,7 @@ class Simulator:
                 leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
             except:
                 print("Path not found")
+                break
             print(leg)
             print(resultant_pos)
             current_start = resultant_pos

@@ -90,8 +90,8 @@ class Grid():
         pix_y = const.VERTICAL_OFFSET + grid_y*(const.BLOCK_SIZE + MARGIN)
         return [pix_x, pix_y]
 
-    def set_cell_as_obstacle(self, pos_x, pos_y):
-        self.cells[pos_x][pos_y].set_obstacle()
+    def set_cell_as_obstacle(self, pos_x, pos_y, id = -1, direction = FacingDirection.RIGHT):
+        self.cells[pos_x][pos_y].set_obstacle(id, direction)
         if self.cells[pos_x][pos_y].obstacle not in self.obstacles:
             self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
         print("Obstacles are:")
@@ -134,8 +134,6 @@ class Grid():
                 except:
                     print()
             obs_cell.obstacle.set_goal_cell(goal_cell)
-
-
         
     def set_cell_as_barrier(self, pos_x, pos_y):
         o_pos = [pos_x, pos_y]

@@ -122,19 +122,21 @@ class Robot:
         if self.moving:
             return
         direction = self.get_direction()
-        n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
 
         # DEFAULT IS NORTH
         pixel_vector = self.transform_vector(Vector2(-3, -1), -self.angle) * const.MARGIN_BLOCK_SIZE
         grid_vector = self.transform_vector(Vector2(-3, 1), self.angle)
+        turn_vector = self.transform_vector(Vector2(-1, -1), -self.angle) * const.MARGIN_BLOCK_SIZE
         
         self.location += grid_vector
-        self.final_pixel_location = self.pixel_location + pixel_vector
+        self.dest_queue.append(self.pixel_location + turn_vector) # TurnPos goes in first
+        self.dest_queue.append(self.pixel_location + pixel_vector) # FinalPos last
+        self.turn = True # Tells animator to turn first
 
         self.final_angle = self.rotate_left()
         self.set_velocity(0, -self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / n * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
         return
     
     def move_forward_right(self):
@@ -161,19 +163,22 @@ class Robot:
         if self.moving:
             return
         direction = self.get_direction()
-        
-        n = 2 * const.MARGIN_BLOCK_SIZE # I have no idea what is n
 
         # DEFAULT IS NORTH
         pixel_vector = self.transform_vector(Vector2(-1, 3), -self.angle) * const.MARGIN_BLOCK_SIZE
         grid_vector = self.transform_vector(Vector2(-1, -3), self.angle)
+        turn_vector = self.transform_vector(Vector2(1, -1), -self.angle) * const.MARGIN_BLOCK_SIZE
         
         self.location += grid_vector
-        self.final_pixel_location = self.pixel_location + pixel_vector
+        final_pixel_location = self.pixel_location + pixel_vector
+        self.dest_queue.append(final_pixel_location + turn_vector) # TurnPos goes in first
+        self.dest_queue.append(final_pixel_location) # FinalPos last
+        self.turn = False # Tells animator to turn last
+
         self.final_angle = self.rotate_right()
         self.set_velocity(0, self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / n * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
         return
     
     def move_backward_right(self):

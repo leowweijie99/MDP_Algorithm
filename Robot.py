@@ -136,14 +136,13 @@ class Robot:
         self.final_angle = self.rotate_left()
         self.set_velocity(0, -self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE * -1 # Turning Radius, -1 turns it in the opposite direction
         return
     
     def move_forward_right(self):
         if self.moving:
             return
         direction = self.get_direction()
-        n = const.MARGIN_BLOCK_SIZE # I have no idea what is n
 
         pixel_vector = self.transform_vector(Vector2(3, -1), -self.angle) * const.MARGIN_BLOCK_SIZE
         grid_vector = self.transform_vector(Vector2(3, 1), self.angle)
@@ -156,7 +155,7 @@ class Robot:
         self.final_angle = self.rotate_right()
         self.set_velocity(0, -self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / n 
+        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE # Turning Radius
         return
     
     def move_backward_left(self):
@@ -178,7 +177,7 @@ class Robot:
         self.final_angle = self.rotate_right()
         self.set_velocity(0, self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE * -1 # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE * -1 # Turning Radius, -1 turns it in the opposite direction
         return
     
     def move_backward_right(self):
@@ -200,7 +199,7 @@ class Robot:
         self.final_angle = self.rotate_left()
         self.set_velocity(0, self.speed)
         self.moving = True
-        self.angular_velocity = self.velocity.y / n # pixel_displacement is turning radius, -1 turns it in the opposite direction
+        self.angular_velocity = self.velocity.y / const.MARGIN_BLOCK_SIZE # Turning Radius
         return
 
     # Rotating left means decrementing the index in the list
@@ -247,7 +246,6 @@ class Robot:
 
     def execute_movement(self, movement):
         print("executing " + str(movement))
-        time.sleep(1)
         if movement == RobotMoves.FORWARD:
             self.move_forward(10)
         elif movement == RobotMoves.BACKWARD:
@@ -271,7 +269,7 @@ class Robot:
         return vector.rotate(angle)
 
     def scan(self, position: list):
-        time.sleep(1)
+        #time.sleep(3)
         robot_xpos = position[0]
         robot_ypos = position[1]
 

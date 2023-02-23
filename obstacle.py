@@ -33,9 +33,9 @@ class Obstacle:
         if self.facing_direction == FacingDirection.UP:
             pygame.draw.line(cell_surface, const.NEON_PINK, (x, y), (x + length, y), 8)
         elif self.facing_direction == FacingDirection.RIGHT:
-            pygame.draw.line(cell_surface, const.NEON_PINK, (x + length, y), (x + length, y + length), 8)
+            pygame.draw.line(cell_surface, const.NEON_PINK, (x + length-const.MARGIN, y), (x + length-const.MARGIN, y + length), 8)
         elif self.facing_direction == FacingDirection.DOWN:
-            pygame.draw.line(cell_surface, const.NEON_PINK, (x, y + length), (x + length, y + length), 8)
+            pygame.draw.line(cell_surface, const.NEON_PINK, (x, y + length-const.MARGIN), (x + length, y + length-const.MARGIN), 8)
         elif self.facing_direction == FacingDirection.LEFT:
             pygame.draw.line(cell_surface, const.NEON_PINK, (x, y), (x, y + length), 8)
 

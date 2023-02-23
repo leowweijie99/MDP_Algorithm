@@ -4,6 +4,7 @@ from goal import Goal
 from barrier import Barrier
 import pygame
 import constants as const
+from obstacle import FacingDirection
 
 class CellStatus(IntEnum):
     EMPTY = 0 # empty
@@ -26,9 +27,9 @@ class Cell:
         self.goal = None
         self.barrier = None
 
-    def set_obstacle(self):
+    def set_obstacle(self, id, direction = FacingDirection.RIGHT):
         if(self.status == CellStatus.EMPTY):
-            self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate)
+            self.obstacle = Obstacle(self.x_coordinate, self.y_coordinate, direction)
             self.status = CellStatus.OBS
 
     def remove_obstacle(self):
@@ -40,9 +41,9 @@ class Cell:
         self.obstacle.on_click()
         return self.obstacle.facing_direction
     
-    def set_goal(self, orientation):
+    def set_goal(self, orientation, id = -1):
         if(self.status == CellStatus.EMPTY):
-            self.goal = Goal(self.x_coordinate, self.y_coordinate, orientation)
+            self.goal = Goal(self.x_coordinate, self.y_coordinate, orientation, id)
             self.status = CellStatus.GOAL
 
     def remove_goal(self):

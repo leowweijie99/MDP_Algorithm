@@ -9,9 +9,10 @@ class FacingDirection(IntEnum):
     LEFT = 3
 
 class Goal:
-    def __init__(self, x, y, facing_direction: FacingDirection = FacingDirection.UP):
+    def __init__(self, x, y, facing_direction: int, id = -1):
         self.x = x
         self.y = y
+        self.id = id
         self.facing_direction = facing_direction
 
     def draw_goal(self, cell_surface, x, y):

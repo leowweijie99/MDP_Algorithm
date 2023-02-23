@@ -13,9 +13,10 @@ class FacingDirection(IntEnum):
     LEFT = 3
 
 class Obstacle:
-    def __init__(self, x, y, facing_direction: FacingDirection = FacingDirection.UP):
+    def __init__(self, x, y, id, facing_direction: FacingDirection = FacingDirection.UP):
         self.x = x
         self.y = y
+        self.id = id
         self.facing_direction = facing_direction
         self.visited = False
         self.host_square = str(x) + '-' + str(y)

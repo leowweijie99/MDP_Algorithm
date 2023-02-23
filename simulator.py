@@ -130,6 +130,19 @@ class Simulator:
 
         return (x, y, orientation)
 
+    def get_closest_goal(self, goal_cells, next_start):
+
+        q = PriorityQueue()
+        for i in range (len(goal_cells)):
+            x = goal_cells[i].x
+            y = goal_cells[i].y
+            d = math.sqrt((x-next_start[0])**2 + (y-next_start[1])**2)
+            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], goal_cells[i]))
+
+        next_item = q.get()
+        return next_item
+    
+
     def on_start(self):
         tried = False
         for obstacle in self.grid.obstacles:
@@ -145,10 +158,24 @@ class Simulator:
             q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction]))
 
         print(q.queue)
+
+        euclidean_q = []
+        next_start = [1, 1]
+        i = 0
+        while (len(goal_cells)) > 0:
+            node = self.get_closest_goal(goal_cells, next_start)
+            euclidean_q.append(node)
+            next_start = [euclidean_q[i][1][0], euclidean_q[i][1][1]]
+            goal_cells.remove(node[2])
+
+        print("Euclidean_q = ", euclidean_q)
+
+
         end_points = []
         i = 0
-        while not q.empty(): #len(self.grid.goal_cells) > 0:
-            temp_point = q.get()
+        while (len(euclidean_q)) > 0: #len(self.grid.goal_cells) > 0:
+            temp_point = euclidean_q[0]
+            euclidean_q.remove(euclidean_q[0])
             print(temp_point)
             end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2]])
             print(i+1 , str(end_points[i]))

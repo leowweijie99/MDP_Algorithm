@@ -142,14 +142,15 @@ class Simulator:
             x = goal_cells[i].x
             y = goal_cells[i].y
             d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
-            q.put(([goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], d))
+            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction]))
 
+        print(q.queue)
         end_points = []
         i = 0
         while not q.empty(): #len(self.grid.goal_cells) > 0:
             temp_point = q.get()
             print(temp_point)
-            end_points.append([temp_point[0][0], temp_point[0][1], temp_point[0][2]])
+            end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2]])
             print(i+1 , str(end_points[i]))
             i += 1
         print(end_points)

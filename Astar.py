@@ -363,23 +363,6 @@ class Astar:
                 row.append(1)
             self.maze.append(row)
 
-    def make_maze(self, grid: Grid):
-        maze = []
-        for x in range(const.NUM_OF_BLOCKS):
-            row = []
-            for y in range(const.NUM_OF_BLOCKS):
-                if grid.cells[x][y].status == CellStatus.OBS:
-                    row.append(0)
-                elif grid.cells[x][y].status == CellStatus.BARRIER:
-                    row.append(2)
-                elif grid.cells[x][y].status == CellStatus.VISITED_OBS:
-                    row.append(3)
-                else:
-                    row.append(1)
-            maze.append(row)
-
-        return maze
-
     def get_robot_frontier(self, node: Node)-> list:
         frontier_node: Node
         xpos = node.position[0]
@@ -395,6 +378,35 @@ class Astar:
             frontier_node = Node(self.grid, const.EAST, None, (xpos+1, ypos))       
 
         return frontier_node
+
+    def get_obstacle_order(self, obstacles):
+        obstacle_queue = PriorityQueue()
+        
+        for i in range(len(obstacles)):
+            x = obstacles[i][0]
+            y = obstacles[i][1]
+            o = obstacles[i][2]
+            d = np.sqrt((x-1)**2 + (y-1)**2)
+            obstacle_queue.get([x, y, o], d)
+
+        return obstacle_queue
+
+def make_maze(grid: Grid):
+    maze = []
+    for x in range(const.NUM_OF_BLOCKS):
+        row = []
+        for y in range(const.NUM_OF_BLOCKS):
+            if grid.cells[x][y].status == CellStatus.OBS:
+                row.append(0)
+            elif grid.cells[x][y].status == CellStatus.BARRIER:
+                row.append(2)
+            elif grid.cells[x][y].status == CellStatus.VISITED_OBS:
+                row.append(3)
+            else:
+                row.append(1)
+        maze.append(row)
+
+    return maze
  
 def main():
     maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],

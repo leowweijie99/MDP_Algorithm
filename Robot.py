@@ -246,7 +246,7 @@ class Robot:
         return vector.rotate(angle)
 
     def scan(self, position: list):
-        time.sleep(3)
+        time.sleep(1)
         robot_xpos = position[0]
         robot_ypos = position[1]
 

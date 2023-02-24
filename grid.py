@@ -94,10 +94,6 @@ class Grid():
         self.cells[pos_x][pos_y].set_obstacle(id, direction)
         if self.cells[pos_x][pos_y].obstacle not in self.obstacles:
             self.obstacles.append(self.cells[pos_x][pos_y].obstacle)
-        print("Obstacles are:")
-        for i in range (len(self.obstacles)):
-            print(i+1, [self.obstacles[i].x, self.obstacles[i].y])
-        print()
 
     def set_cell_as_goal(self, pos_x, pos_y, id = -1, direction = FacingDirection.RIGHT):
         obs_cell = self.get_cell(pos_x, pos_y)
@@ -107,16 +103,16 @@ class Grid():
         
         goal_x, goal_y = pos_x, pos_y
         if direction == FacingDirection.UP:
-            goal_y += 3
+            goal_y += 2
             orientation = const.SOUTH
         elif direction == FacingDirection.RIGHT:
-            goal_x += 3
+            goal_x += 2
             orientation = const.WEST
         elif direction == FacingDirection.DOWN:
-            goal_y -= 3
+            goal_y -= 2
             orientation = const.NORTH
         elif direction == FacingDirection.LEFT:
-            goal_x -= 3
+            goal_x -= 2
             orientation = const.EAST
 
         # Setting the cell as a goal cell

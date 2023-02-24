@@ -120,14 +120,12 @@ class Simulator:
             q.put((d, i, goal_cells[i]))
 
         closest_goal_cell = q.get()
-        print(closest_goal_cell)
         x = closest_goal_cell[2].x
         y = closest_goal_cell[2].y
         orientation = closest_goal_cell[2].facing_direction
 
         self.grid.goal_cells.remove(closest_goal_cell[2])
 
-        print((x, y, orientation))
 
         return (x, y, orientation)
 
@@ -135,10 +133,11 @@ class Simulator:
 
         q = PriorityQueue()
         for i in range (len(goal_cells)):
-            x = goal_cells[i].x
-            y = goal_cells[i].y
-            d = math.sqrt((x-next_start[0])**2 + (y-next_start[1])**2)
-            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], goal_cells[i]))
+            if(goal_cells[i] != None):
+                x = goal_cells[i].x
+                y = goal_cells[i].y
+                d = math.sqrt((x-next_start[0])**2 + (y-next_start[1])**2)
+                q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], goal_cells[i]))
 
         next_item = q.get()
         return next_item
@@ -153,12 +152,11 @@ class Simulator:
         goal_cells = self.grid.goal_cells
         q = PriorityQueue()
         for i in range (len(goal_cells)):
-            x = goal_cells[i].x
-            y = goal_cells[i].y
-            d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
-            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction]))
-
-        print(q.queue)
+            if(goal_cells[i] != None):
+                x = goal_cells[i].x
+                y = goal_cells[i].y
+                d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
+                q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction]))
 
         euclidean_q = []
         next_start = [1, 1]
@@ -169,28 +167,20 @@ class Simulator:
             next_start = [euclidean_q[i][1][0], euclidean_q[i][1][1]]
             goal_cells.remove(node[2])
 
-        print("Euclidean_q = ", euclidean_q)
-
 
         end_points = []
         i = 0
         while (len(euclidean_q)) > 0: #len(self.grid.goal_cells) > 0:
             temp_point = euclidean_q[0]
             euclidean_q.remove(euclidean_q[0])
-            print(temp_point)
             end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2]])
-            print(i+1 , str(end_points[i]))
             i += 1
-        print(end_points)
         current_start = (1,1)
         current_orientation = const.NORTH
-        #print(self.maze)
         path = []
         superpath = []
         i = 0
         to_execute = []
-        for row in self.maze:
-            print(row)
         while i < len(end_points):
             print(str(current_start) + ' ' + str(current_orientation))
             current_endpoint = (end_points[i][0], end_points[i][1])
@@ -208,8 +198,6 @@ class Simulator:
                 print("Path not found to ", end_points[i])
                 i += 1
 
-
-        print(end_points)
         i = 0
         for leg in path:
             for movement in leg:

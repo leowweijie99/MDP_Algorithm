@@ -9,6 +9,7 @@ from obstacle import Obstacle
 from obstacle import FacingDirection
 from Astar import Astar
 from cell import CellStatus
+from helper import get_commands
 
 class Simulator:
     def __init__(self):
@@ -146,7 +147,7 @@ class Simulator:
     def on_start(self):
         tried = False
         for obstacle in self.grid.obstacles:
-            self.grid.set_cell_as_goal(obstacle.x, obstacle.y, obstacle.facing_direction)
+            self.grid.set_cell_as_goal(obstacle.x, obstacle.y, 1, obstacle.facing_direction)
             self.grid.set_cell_as_barrier(obstacle.x, obstacle.y)
 
         goal_cells = self.grid.goal_cells
@@ -215,6 +216,11 @@ class Simulator:
                 superpath.append(movement)
             superpath.append(to_execute[i])
             i += 1
+
+        commands = get_commands(superpath)
+
+        print(commands)
+
 
         self.robot.movement_queue = superpath
         return path

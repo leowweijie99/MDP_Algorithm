@@ -99,7 +99,7 @@ class Grid():
             print(i+1, [self.obstacles[i].x, self.obstacles[i].y])
         print()
 
-    def set_cell_as_goal(self, pos_x, pos_y, direction):
+    def set_cell_as_goal(self, pos_x, pos_y, id = -1, direction = FacingDirection.RIGHT):
         obs_cell = self.get_cell(pos_x, pos_y)
         # Return if cell clicked is not a obstacle
         if (obs_cell.status != CellStatus.OBS):
@@ -126,7 +126,7 @@ class Grid():
             self.remove_goal(obs_cell)
         else:
             goal_cell = self.get_cell(goal_x, goal_y)
-            goal_cell.set_goal(orientation)
+            goal_cell.set_goal(orientation, id)
             self.goal_cells.append(goal_cell.goal)
             if (obs_cell.obstacle.goal_cell != None):
                 try:

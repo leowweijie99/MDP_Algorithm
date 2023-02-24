@@ -14,6 +14,7 @@ class Goal:
         self.y = y
         self.id = id
         self.facing_direction = facing_direction
+        self.data = (self.x, self.y, self.facing_direction, self.id)
 
     def draw_goal(self, cell_surface, x, y):
         if self.facing_direction == FacingDirection.UP:

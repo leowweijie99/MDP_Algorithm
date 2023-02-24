@@ -103,16 +103,16 @@ class Grid():
         
         goal_x, goal_y = pos_x, pos_y
         if direction == FacingDirection.UP:
-            goal_y += 3
+            goal_y += 2
             orientation = const.SOUTH
         elif direction == FacingDirection.RIGHT:
-            goal_x += 3
+            goal_x += 2
             orientation = const.WEST
         elif direction == FacingDirection.DOWN:
-            goal_y -= 3
+            goal_y -= 2
             orientation = const.NORTH
         elif direction == FacingDirection.LEFT:
-            goal_x -= 3
+            goal_x -= 2
             orientation = const.EAST
 
         # Setting the cell as a goal cell

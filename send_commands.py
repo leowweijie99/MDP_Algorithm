@@ -36,101 +36,12 @@ def path_maker():
     grid = Grid(20, 20, const.BLOCK_SIZE, (0,0))
     for obstacle in obstacles:
         grid.set_cell_as_obstacle(obstacle['x'], obstacle['y'], obstacle['id'], d_to_facing_direction_map[obstacle['d']])
-        grid.set_cell_as_goal(obstacle['x'], obstacle['y'], d_to_facing_direction_map[obstacle['d']], obstacle['id'])
-        grid.set_cell_as_barrier(obstacle['x'], obstacle['y'])
-
-    
-
-    maze = make_maze(grid)
-    goal_cells = grid.goal_cells
-    q = PriorityQueue()
-    current_start = (1, 1)
-    current_orientation = const.NORTH 
-    for i in range (len(goal_cells)):
-        print('current goal cell is: ', goal_cells[i].data)
-        x = goal_cells[i].x
-        y = goal_cells[i].y
-        d = math.sqrt((x-1)**2 + (y-1)**2) 
-        q.put(([goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction, goal_cells[i].id], d))
-    
-    end_points = []
-    i = 0
-    while not q.empty(): #len(self.grid.goal_cells) > 0:
-        temp_point = q.get()
-        print(temp_point)
-        end_points.append([temp_point[0][0], temp_point[0][1], temp_point[0][2], temp_point[0][3]])
-        print(i+1 , str(end_points[i]))
-        i += 1
-
-    path = []
-    superpath = []
-
-    i = 0
-    while i < len(end_points):
-        print(str(current_start) + ' ' + str(current_orientation))
-        current_endpoint = (end_points[i][0], end_points[i][1])
-        astar = Astar(grid, current_start, current_endpoint)
-        astar.set_maze(maze)
-        try:
-            leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
-        except:
-            print("Path not found")
-            break
-        print(leg)
-        print(resultant_pos)
-        current_start = resultant_pos
-        current_orientation = end_points[i][2]
-        path.append(leg)
-        i += 1
-
-        i = 0
-        for leg in path:
-            for movement in leg:
-                superpath.append(movement)
-            superpath.append(end_points[i][3])
-            i += 1
-
-    commands = get_commands(superpath)
-
-    return jsonify({
-        "data": {'commands': commands},
-        "error": None
-    })
-
-def get_closest_goal(self, goal_cells, next_start):
-
-    q = PriorityQueue()
-    for i in range (len(goal_cells)):
-            x = goal_cells[i].x
-            y = goal_cells[i].y
-            d = math.sqrt((x-next_start[0])**2 + (y-next_start[1])**2)
-            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], goal_cells[i]))
-
-    next_item = q.get()
-    return next_item
-
-def path(obstacles: list):
-
-    d_to_facing_direction_map = {
-
-        0: FacingDirection.UP,
-        2: FacingDirection.RIGHT,
-        4: FacingDirection.DOWN,
-        6: FacingDirection.LEFT
-    }
-
-    grid = Grid(20, 20, const.BLOCK_SIZE, (0,0))
-    for obstacle in obstacles:
-        print('current obstacle is: ', obstacle)
-        print('current directions orientation is: ', d_to_facing_direction_map[obstacle['d']])
-        grid.set_cell_as_obstacle(obstacle['x'], obstacle['y'], obstacle['id'], d_to_facing_direction_map[obstacle['d']])
         grid.set_cell_as_goal(obstacle['x'], obstacle['y'], obstacle['id'], d_to_facing_direction_map[obstacle['d']])
         grid.set_cell_as_barrier(obstacle['x'], obstacle['y'])
 
     
 
     maze = make_maze(grid)
-    print('goal cells are: ', grid.goal_cells)
     goal_cells = grid.goal_cells
     q = PriorityQueue()
     current_start = (1, 1)
@@ -146,35 +57,171 @@ def path(obstacles: list):
     i = 0
     while not q.empty(): #len(self.grid.goal_cells) > 0:
         temp_point = q.get()
-        print('top of queue is', temp_point[1])
-        print('temp point is: ',temp_point)
+        print(temp_point)
         end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2], temp_point[1][3]])
-        #print(i+1 , str(end_points[i]))
+        print(i+1 , str(end_points[i]))
         i += 1
 
     path = []
     superpath = []
-    for i in range(len(end_points)):
-        print(end_points[i])
 
     i = 0
+    goal_cells = grid.goal_cells
+
+    euclidean_q = []
+    next_start = [1, 1]
+    i = 0
+    while (len(goal_cells)) > 0:
+        node = get_closest_goal(goal_cells, next_start)
+        euclidean_q.append(node)
+        next_start = [euclidean_q[i][1][0], euclidean_q[i][1][1]]
+        goal_cells.remove(node[2])
+
+    end_points = []
+    i = 0
+    while (len(euclidean_q)) > 0: #len(self.grid.goal_cells) > 0:
+        temp_point = euclidean_q[0]
+        euclidean_q.remove(euclidean_q[0])
+        end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2]])
+        i += 1
+        current_start = (1,1)
+        current_orientation = const.NORTH
+        path = []
+        superpath = []
+        i = 0
+        to_execute = []
     while i < len(end_points):
         print(str(current_start) + ' ' + str(current_orientation))
         current_endpoint = (end_points[i][0], end_points[i][1])
         astar = Astar(grid, current_start, current_endpoint)
         astar.set_maze(maze)
+        tried = False
         try:
             leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+            current_start = resultant_pos
+            current_orientation = end_points[i][2]
+            path.append(leg)
+            to_execute.append(end_points[i])
+            i += 1
         except:
-            print("Path not found")
-            break
-        current_start = resultant_pos
-        current_orientation = end_points[i][2]
-        path.append(leg)
+            print("Path not found to ", end_points[i])
+            i += 1
+
+        i = 0
+        for leg in path:
+            for movement in leg:
+                superpath.append(movement)
+            superpath.append([end_points[i][3]])
+            i += 1
+
+    commands = get_commands(superpath)
+
+    return jsonify({
+        "data": {'commands': commands},
+        "error": None
+    })
+
+def get_closest_goal(goal_cells, next_start):
+
+    q = PriorityQueue()
+    for i in range (len(goal_cells)):
+            x = goal_cells[i].x
+            y = goal_cells[i].y
+            d = math.sqrt((x-next_start[0])**2 + (y-next_start[1])**2)
+            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction, goal_cells[i].id], goal_cells[i]))
+
+    next_item = q.get()
+    return next_item
+
+def path(obstacles: list):
+
+    d_to_facing_direction_map = {
+
+        0: FacingDirection.UP,
+        2: FacingDirection.RIGHT,
+        4: FacingDirection.DOWN,
+        6: FacingDirection.LEFT
+    }
+
+    #print("content: {}".format(content))
+    grid = Grid(20, 20, const.BLOCK_SIZE, (0,0))
+    for obstacle in obstacles:
+        grid.set_cell_as_obstacle(obstacle['x'], obstacle['y'], obstacle['id'], d_to_facing_direction_map[obstacle['d']])
+        grid.set_cell_as_goal(obstacle['x'], obstacle['y'], obstacle['id'], d_to_facing_direction_map[obstacle['d']])
+        grid.set_cell_as_barrier(obstacle['x'], obstacle['y'])
+
+    
+
+    maze = make_maze(grid)
+    goal_cells = grid.goal_cells
+    q = PriorityQueue()
+    current_start = (1, 1)
+    current_orientation = const.NORTH 
+    for i in range (len(goal_cells)):
+        print('current goal cell is: ', goal_cells[i].data)
+        x = goal_cells[i].x
+        y = goal_cells[i].y
+        d = math.sqrt((x-1)**2 + (y-1)**2) 
+        q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction, goal_cells[i].id]))
+    
+    end_points = []
+    i = 0
+    while not q.empty(): #len(self.grid.goal_cells) > 0:
+        temp_point = q.get()
+        print(temp_point)
+        end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2], temp_point[1][3]])
+        print(i+1 , str(end_points[i]))
         i += 1
 
+    path = []
+    superpath = []
+
     i = 0
-    print(path)
+    goal_cells = grid.goal_cells
+
+    euclidean_q = []
+    next_start = [1, 1]
+    print('end_points before Astar: ', end_points)
+    i = 0
+    while (len(goal_cells)) > 0:
+        node = get_closest_goal(goal_cells, next_start)
+        euclidean_q.append(node)
+        next_start = [euclidean_q[i][1][0], euclidean_q[i][1][1]]
+        goal_cells.remove(node[2])
+
+    end_points = []
+    i = 0
+    while (len(euclidean_q)) > 0: #len(self.grid.goal_cells) > 0:
+        temp_point = euclidean_q[0]
+        euclidean_q.remove(euclidean_q[0])
+        end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2], temp_point[1][3]])
+        i += 1
+    current_start = (1,1)
+    current_orientation = const.NORTH
+    path = []
+    superpath = []
+    i = 0
+    to_execute = []
+    while i < len(end_points):
+        print(str(current_start) + ' ' + str(current_orientation))
+        current_endpoint = (end_points[i][0], end_points[i][1])
+        astar = Astar(grid, current_start, current_endpoint)
+        astar.set_maze(maze)
+        tried = False
+        try:
+            leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+            current_start = resultant_pos
+            current_orientation = end_points[i][2]
+            path.append(leg)
+            to_execute.append(end_points[i])
+            i += 1
+        except:
+            print("Path not found to ", end_points[i])
+            i += 1
+
+    print('end_points: ', end_points)
+    print('to_execute: ', to_execute)
+    i = 0
     for leg in path:
         for movement in leg:
             superpath.append(movement)
@@ -182,6 +229,7 @@ def path(obstacles: list):
         i += 1
 
     commands = get_commands(superpath)
+
     return commands
 
 obstacles = [
@@ -193,7 +241,12 @@ obstacles = [
      'y': 19,
      'id': 2,
      'd': 4
-    }
+    },
+    {'x': 19,
+     'y': 0,
+     'id': 3,
+     'd': 6
+     }
 ]
 
 print(obstacles)

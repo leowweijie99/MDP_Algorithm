@@ -9,7 +9,6 @@ from obstacle import Obstacle
 from obstacle import FacingDirection
 from Astar import Astar
 from cell import CellStatus
-from helper import get_commands
 
 class Simulator:
     def __init__(self):
@@ -206,7 +205,6 @@ class Simulator:
             i += 1
 
         self.robot.movement_queue = superpath
-        print(get_commands(superpath))
         return path
 
     def make_maze(self):

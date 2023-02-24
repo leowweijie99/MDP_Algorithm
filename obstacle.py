@@ -22,6 +22,7 @@ class Obstacle:
         self.host_square = str(x) + '-' + str(y)
         self.target = ''
         self.goal_cell = None # This goal in obstacle is pointing towards the cell
+        self.data = (self.x, self.y, self.id, self.facing_direction)
 
     def has_been_visited(self):
         if self.visited == True:

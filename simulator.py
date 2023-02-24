@@ -134,10 +134,11 @@ class Simulator:
 
         q = PriorityQueue()
         for i in range (len(goal_cells)):
-            x = goal_cells[i].x
-            y = goal_cells[i].y
-            d = math.sqrt((x-next_start[0])**2 + (y-next_start[1])**2)
-            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], goal_cells[i]))
+            if(goal_cells[i] != None):
+                x = goal_cells[i].x
+                y = goal_cells[i].y
+                d = math.sqrt((x-next_start[0])**2 + (y-next_start[1])**2)
+                q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction], goal_cells[i]))
 
         next_item = q.get()
         return next_item
@@ -152,10 +153,11 @@ class Simulator:
         goal_cells = self.grid.goal_cells
         q = PriorityQueue()
         for i in range (len(goal_cells)):
-            x = goal_cells[i].x
-            y = goal_cells[i].y
-            d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
-            q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction]))
+            if(goal_cells[i] != None):
+                x = goal_cells[i].x
+                y = goal_cells[i].y
+                d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
+                q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction]))
 
         print(q.queue)
 

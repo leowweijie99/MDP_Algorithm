@@ -42,7 +42,7 @@ class Astar:
         self.end = end
         self.TURNING_RADIUS = const.TURNING_RADIUS
         self.grid = grid
-        self.safe_squared_obstacle_distance = 4
+        self.safe_squared_obstacle_distance = 6
         self.goal_node_set = []
         self.additional_car_nodes = []
 

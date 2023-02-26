@@ -245,7 +245,6 @@ class Robot:
             self.angular_velocity = 0
 
     def execute_movement(self, movement):
-        print("executing " + str(movement))
         if movement == RobotMoves.FORWARD:
             self.move_forward(10)
         elif movement == RobotMoves.BACKWARD:

@@ -182,7 +182,6 @@ class Simulator:
         i = 0
         to_execute = []
         while i < len(end_points):
-            print(str(current_start) + ' ' + str(current_orientation))
             current_endpoint = (end_points[i][0], end_points[i][1])
             astar = Astar(self.grid, current_start, current_endpoint)
             astar.set_maze(self.maze)

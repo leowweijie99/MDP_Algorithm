@@ -245,7 +245,7 @@ class Robot:
             self.angular_velocity = 0
 
     def execute_movement(self, movement):
-        print("executing " + str(movement))
+        #print("executing " + str(movement))
         if movement == RobotMoves.FORWARD:
             self.move_forward(10)
         elif movement == RobotMoves.BACKWARD:
@@ -269,7 +269,7 @@ class Robot:
         return vector.rotate(angle)
 
     def scan(self, position: list):
-        #time.sleep(3)
+        time.sleep(1)
         robot_xpos = position[0]
         robot_ypos = position[1]
 

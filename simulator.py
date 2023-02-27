@@ -53,11 +53,7 @@ class Simulator:
 
                         if event.button == 1: # LEFT CLICK
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
-                            direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
-                            #self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
-                            #self.grid.set_cell_as_barrier(current_cell[0], current_cell[1])
-                            #self.q = self.find_distance()
-                            #self.show_cell_statuses()
+                            self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
                             
                             click_count+=1
                             

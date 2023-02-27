@@ -71,6 +71,7 @@ class Robot:
                 self.turn = not self.turn # Invert turn. if was turning, time to move straight
             else:                         # MOVEMENT COMPLETED
                 print(self.location)
+                self.grid.get_cell(int(self.location[0]), int(self.location[1])).status = CellStatus.PATH
                 self.turn = False
         else:                             # Continue moving
             if (self.turn):               # Need to turn

@@ -42,7 +42,7 @@ class Astar:
         self.end = end
         self.TURNING_RADIUS = const.TURNING_RADIUS
         self.grid = grid
-        self.safe_squared_obstacle_distance = 4
+        self.safe_squared_obstacle_distance = 6
         self.goal_node_set = []
         self.additional_car_nodes = []
 
@@ -89,7 +89,7 @@ class Astar:
             const.WEST: np.array([-1, 0]),
         }
 
-        self.turn_cost = 3
+        self.turn_cost = 5
         self.straight_cost = 1
 
         self.forward_vectors = {

@@ -89,7 +89,7 @@ class Astar:
             const.WEST: np.array([-1, 0]),
         }
 
-        self.turn_cost = 5
+        self.turn_cost = 3
         self.straight_cost = 1
 
         self.forward_vectors = {
@@ -176,7 +176,7 @@ class Astar:
 
         self.goal_node_set.append(end_node.data) # data = ((x, y), orientation)
         
-        #self.set_adjacent_squares_to_goals(end_node)
+        self.set_adjacent_squares_to_goals(end_node)
 
         self.unvisited_queue = PriorityQueue()
         self.node_to_f_dict = {}
@@ -343,8 +343,13 @@ class Astar:
 
         if move in self.turn_types:
             cost = self.straight_cost*self.turn_cost
+            if move == RobotMoves.BACKWARD_LEFT or move == RobotMoves.BACKWARD_RIGHT:
+                cost += 2
         else:
             cost = self.straight_cost
+            if move == RobotMoves.BACKWARD:
+                cost += 1
+            
 
         return cost
 

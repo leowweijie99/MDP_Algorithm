@@ -1,6 +1,7 @@
 # Panel for all the buttons
 from button import *
 import Astar
+from obstacle import FacingDirection
 
 class Controls:
 
@@ -70,25 +71,25 @@ class Controls:
         return False
     def generate_test_obstacles(self):
         self.simulator.grid.set_cell_as_obstacle(4, 6)
-        #self.simulator.grid.set_cell_image_direction(4, 6, 1)
+        self.simulator.grid.get_cell(4, 6).obstacle.facing_direction = FacingDirection.RIGHT
 
         self.simulator.grid.set_cell_as_obstacle(0, 15)
-        #self.simulator.grid.set_cell_image_direction(0, 15, 2)
+        self.simulator.grid.get_cell(0, 15).obstacle.facing_direction = FacingDirection.DOWN
 
         self.simulator.grid.set_cell_as_obstacle(3, 19)
-        #self.simulator.grid.set_cell_image_direction(3, 19, 2)
+        self.simulator.grid.get_cell(3, 19).obstacle.facing_direction = FacingDirection.DOWN
 
         self.simulator.grid.set_cell_as_obstacle(9, 14)
-        #self.simulator.grid.set_cell_image_direction(9, 14, 0)
+        self.simulator.grid.get_cell(9, 14).obstacle.facing_direction = FacingDirection.UP
 
         self.simulator.grid.set_cell_as_obstacle(13, 12)
-        #self.simulator.grid.set_cell_image_direction(13, 12, 2)
+        self.simulator.grid.get_cell(13, 12).obstacle.facing_direction = FacingDirection.DOWN
 
         self.simulator.grid.set_cell_as_obstacle(13, 13)
-        #self.simulator.grid.set_cell_image_direction(13, 13, 0)
+        self.simulator.grid.get_cell(13, 13).obstacle.facing_direction = FacingDirection.UP
 
         self.simulator.grid.set_cell_as_obstacle(19, 19)
-        #self.simulator.grid.set_cell_image_direction(19, 19, 3)
+        self.simulator.grid.get_cell(19, 19).obstacle.facing_direction = FacingDirection.LEFT
 
         self.simulator.grid.set_cell_as_obstacle(18, 0)
-        self.simulator.grid.set_cell_image_direction(18, 0, 0)
+        self.simulator.grid.get_cell(18, 0).obstacle.facing_direction = FacingDirection.LEFT

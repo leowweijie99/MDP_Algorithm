@@ -70,7 +70,7 @@ class Robot:
             if len(self.dest_queue) != 0: # If robot is only halfway
                 self.turn = not self.turn # Invert turn. if was turning, time to move straight
             else:                         # MOVEMENT COMPLETED
-                print(self.location)
+                #print(self.location)
                 self.grid.get_cell(int(self.location[0]), int(self.location[1])).status = CellStatus.PATH
                 self.turn = False
         else:                             # Continue moving

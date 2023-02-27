@@ -157,11 +157,13 @@ class Simulator:
         # --------------------- REORDER BASE ON EUCLIDEAN DISTANCE FROM PREVIOUS GOAL NODE --------------------- 
         euclidean_q = []
         next_start = const.ROBOT_STARTLOC
+        i = 0
         while (len(goal_cells)) > 0:
             node = self.get_closest_goal(goal_cells, next_start)
             euclidean_q.append(node)
-            next_start = [euclidean_q[0][1][0], euclidean_q[0][1][1]] #Node = (euclidianDist, (X, Y, Orientation), Goal object)
+            next_start = [euclidean_q[i][1][0], euclidean_q[i][1][1]] #Node = (euclidianDist, (X, Y, Orientation), Goal object)
             goal_cells.remove(node[2])
+            i+= 1
 
         # --------------------- ADD "(X, Y, Orientation)" OF EACH NODE INTO end_points[]?? ---------------------
         end_points = []
@@ -178,7 +180,6 @@ class Simulator:
         path = []
         superpath = []
         i = 0
-        to_execute = []
 
         while i < len(end_points):
             current_endpoint = (end_points[i][0], end_points[i][1])
@@ -199,7 +200,6 @@ class Simulator:
                 print("Path not found to ", end_points[i])
                 i += 1
         commands = get_commands(superpath)
-
         print(commands)
 
         self.robot.movement_queue = superpath

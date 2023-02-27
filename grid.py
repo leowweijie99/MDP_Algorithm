@@ -57,6 +57,8 @@ class Grid():
                     color = const.WHITE
                 if cell.status == CellStatus.VISITED_GOAL:
                     color = const.GREEN
+                if cell.status == CellStatus.PATH:
+                    color = const.NEON_PINK
                 cell_surface.fill(color)
                 if cell.obstacle != None:
                     cell.obstacle.draw_obstacle(cell_surface, 0, 0)

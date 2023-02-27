@@ -42,7 +42,7 @@ class Astar:
         self.end = end
         self.TURNING_RADIUS = const.TURNING_RADIUS
         self.grid = grid
-        self.safe_squared_obstacle_distance = 4
+        self.safe_squared_obstacle_distance = 6
         self.goal_node_set = []
         self.additional_car_nodes = []
 
@@ -174,36 +174,27 @@ class Astar:
         self.start = Node(self.grid, start_orientation, None, self.start)
         end_node = Node(self.grid, end_orientation, None, self.end)
 
-        self.goal_node_set.append(end_node.data)
+        self.goal_node_set.append(end_node.data) # data = ((x, y), orientation)
         
         self.set_adjacent_squares_to_goals(end_node)
 
         self.unvisited_queue = PriorityQueue()
         self.node_to_f_dict = {}
 
-        unvisited = []
         visited = []
-
+        counter = 0
         self.set_id()
         self.put_into_unvisited_queue(self.start)
-        #unvisited.append(self.start)
         
-        while not self.is_unvisited_queue_empty(): #len(unvisited) > 0:
-
+        # Start Algorithm
+        # 1. Algorithm takes too long to expand every node
+        while not self.is_unvisited_queue_empty():
             current_node: Node = self.get_from_unvisited_queue()
-
-            #current_node: Node = unvisited[0]
-            #current_index = 0
-            #for index, item in enumerate(unvisited):
-             #   if item.f<current_node.f:
-              #      current_node = item
-               #     current_index = index
-
-            #unvisited.pop(current_index)
             visited.append(current_node.data)
 
             frontier_node: Node = self.get_robot_frontier(current_node)
 
+            #           GOAL FOUND
             if frontier_node.data in self.goal_node_set:
                 path = self.populate_path(current_node)
                 return path, current_node.position
@@ -212,6 +203,7 @@ class Astar:
 
             child: Node
             for child in current_node.children:
+                counter += 1
                 if child.data in visited:
                     continue
 
@@ -225,16 +217,19 @@ class Astar:
                 self.put_into_unvisited_queue(child)
                 #unvisited.append(child)
 
+        print("Unable to find any goal")
+        return None
     def populate_path(self, node: Node) -> list:
         node_path = []
         movements = []
         current_node = node
 
+        # --------------------- FROM END NODE, INSERT TO LSTFROM FRONT current_node.parent_to_child_move, WHICH STORES THE MOVEMENT THE ROBOT MADE FROM current_node.parent TO GET TO current_node ---------------------
         while current_node != None:
             node_path.insert(0, current_node)
             movements.insert(0, current_node.parent_to_child_move)
             current_node = current_node.parent
-
+        
         return movements
 
     def within_boundary(self, position: tuple):
@@ -344,13 +339,17 @@ class Astar:
                 self.goal_node_set.append(target)
 
     def get_cost(self, node: Node):
-        straight_cost = 3
         move = node.parent_to_child_move
 
         if move in self.turn_types:
-            cost = straight_cost*self.turn_cost
+            cost = self.straight_cost*self.turn_cost
+            if move == RobotMoves.BACKWARD_LEFT or move == RobotMoves.BACKWARD_RIGHT:
+                cost += 2
         else:
-            cost = straight_cost
+            cost = self.straight_cost
+            if move == RobotMoves.BACKWARD:
+                cost += 1
+            
 
         return cost
 
@@ -407,80 +406,6 @@ def make_maze(grid: Grid):
         maze.append(row)
 
     return maze
- 
-def main():
-    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]]
-
-    start = (0, 0)
-    end = (9, 4)
-
-    path = Astar(maze, None, start, end, None)
-    print(path)
-
-#main()
-
-def unit_test():
-
-    maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-    start = (0,0)
-    goal = (7,4)
-
-    grid = Grid(20, 10, const.BLOCK_SIZE, (0,0))
-
-    grid.obstacles = [Obstacle(4, 4, FacingDirection.RIGHT)]
-
-    astar = Astar(grid, start, goal)
-
-    astar.set_maze(maze)
-
-    path = astar.make_path(const.NORTH, const.WEST)
-    print(path)
-
-
-#unit_test()
-
-def boundary_test():
-    maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-    start = (0,0)
-    goal = (7,4)
-    grid = Grid(20, 10, const.BLOCK_SIZE, (0,0))
-    astar = Astar(grid, start, goal)
-
-    astar.set_maze(maze)
-
-    test_coords = [(0,0), (0,9), (19,9), (19,0), (12, 0), (0, 5), (19,6), (14, 9)]
-
-    for coord in test_coords:
-        print(astar.within_boundary(coord))
-
-#boundary_test()
 
 def correct_maze(maze: list):
     for i in range(len(maze)):
@@ -489,42 +414,3 @@ def correct_maze(maze: list):
                 maze[i][j] = 1
             elif maze[i][j] == 1:
                 maze[i][j] = 0
-
-def collision_test():
-
-    maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 2, 2, 0, 0],
-            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0],
-            [0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0],
-            [0, 0, 2, 2, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-    correct_maze(maze)
-
-    grid = Grid(1, 1, const.BLOCK_SIZE, (0,0))
-
-    start = Node(grid, const.NORTH, None, (6,2))
-    end = (19, 9)
-
-    astar = Astar(grid, start.position, end)
-    astar.set_maze(maze)
-
-    maze[start.position[1]][start.position[0]] = 5
-    astar.get_children(start)
-
-    print(start.children)
-
-    child: Node
-    for child in start.children:
-        child_position = child.data[0]
-        maze[child_position[1]][child_position[0]] = 4
-        print("To get to: " + str(child.data) + " take move " + str(child.parent_to_child_move))
-
-    for row in maze:
-        print(row)
-
-#collision_test()

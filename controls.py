@@ -1,6 +1,7 @@
 # Panel for all the buttons
 from button import *
 import Astar
+from obstacle import FacingDirection
 
 class Controls:
 
@@ -42,7 +43,7 @@ class Controls:
             if ((btn.x < mousePos[0] < btn.x + btn.width) and (btn.y < mousePos[1] < btn.y + btn.height)): # Check if mosPos is within a button's x and y coord
                 func = btn.function
                 if func == "ADD":
-                    self.simulator.find_goal_cells()
+                    self.generate_test_obstacles()
                     return True
                 elif func == "START":
                     self.simulator.on_start()
@@ -68,3 +69,27 @@ class Controls:
                     return True 
         #print(self.robot.location)
         return False
+    def generate_test_obstacles(self):
+        self.simulator.grid.set_cell_as_obstacle(4, 6)
+        self.simulator.grid.get_cell(4, 6).obstacle.facing_direction = FacingDirection.RIGHT
+
+        self.simulator.grid.set_cell_as_obstacle(0, 15)
+        self.simulator.grid.get_cell(0, 15).obstacle.facing_direction = FacingDirection.DOWN
+
+        self.simulator.grid.set_cell_as_obstacle(3, 19)
+        self.simulator.grid.get_cell(3, 19).obstacle.facing_direction = FacingDirection.DOWN
+
+        self.simulator.grid.set_cell_as_obstacle(9, 14)
+        self.simulator.grid.get_cell(9, 14).obstacle.facing_direction = FacingDirection.UP
+
+        self.simulator.grid.set_cell_as_obstacle(13, 12)
+        self.simulator.grid.get_cell(13, 12).obstacle.facing_direction = FacingDirection.DOWN
+
+        self.simulator.grid.set_cell_as_obstacle(13, 13)
+        self.simulator.grid.get_cell(13, 13).obstacle.facing_direction = FacingDirection.UP
+
+        self.simulator.grid.set_cell_as_obstacle(19, 19)
+        self.simulator.grid.get_cell(19, 19).obstacle.facing_direction = FacingDirection.LEFT
+
+        self.simulator.grid.set_cell_as_obstacle(18, 0)
+        self.simulator.grid.get_cell(18, 0).obstacle.facing_direction = FacingDirection.LEFT

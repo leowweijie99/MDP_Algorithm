@@ -70,7 +70,8 @@ class Robot:
             if len(self.dest_queue) != 0: # If robot is only halfway
                 self.turn = not self.turn # Invert turn. if was turning, time to move straight
             else:                         # MOVEMENT COMPLETED
-                print(self.location)
+                #print(self.location)
+                self.grid.get_cell(int(self.location[0]), int(self.location[1])).status = CellStatus.PATH
                 self.turn = False
         else:                             # Continue moving
             if (self.turn):               # Need to turn
@@ -245,7 +246,7 @@ class Robot:
             self.angular_velocity = 0
 
     def execute_movement(self, movement):
-        print("executing " + str(movement))
+        #print("executing " + str(movement))
         if movement == RobotMoves.FORWARD:
             self.move_forward(10)
         elif movement == RobotMoves.BACKWARD:
@@ -269,7 +270,7 @@ class Robot:
         return vector.rotate(angle)
 
     def scan(self, position: list):
-        #time.sleep(3)
+        time.sleep(1)
         robot_xpos = position[0]
         robot_ypos = position[1]
 

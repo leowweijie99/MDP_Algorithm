@@ -53,11 +53,7 @@ class Simulator:
 
                         if event.button == 1: # LEFT CLICK
                             self.grid.set_cell_as_obstacle(current_cell[0], current_cell[1])
-                            direction = self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
-                            #self.grid.set_cell_as_goal(current_cell[0], current_cell[1], direction)
-                            #self.grid.set_cell_as_barrier(current_cell[0], current_cell[1])
-                            #self.q = self.find_distance()
-                            #self.show_cell_statuses()
+                            self.grid.set_cell_image_direction(current_cell[0], current_cell[1], click_count)
                             
                             click_count+=1
                             
@@ -69,7 +65,6 @@ class Simulator:
             self.draw_grid()
             self.controls.draw_buttons()
             self.robot.draw_robot()
-            self.maze = self.make_maze()
             pygame.display.update()
         pygame.quit()
 
@@ -144,11 +139,12 @@ class Simulator:
     
 
     def on_start(self):
-        tried = False
+        # --------------------- SET BARRIER AND GOAL CELLS FOR EACH OBSTACLE --------------------- 
         for obstacle in self.grid.obstacles:
             self.grid.set_cell_as_goal(obstacle.x, obstacle.y, 1, obstacle.facing_direction)
             self.grid.set_cell_as_barrier(obstacle.x, obstacle.y)
 
+        # --------------------- STORE GOAL CELLS INTO PRIORITY QUEUE --------------------- 
         goal_cells = self.grid.goal_cells
         q = PriorityQueue()
         for i in range (len(goal_cells)):
@@ -158,57 +154,53 @@ class Simulator:
                 d = math.sqrt((x-self.robot.location[0])**2 + (y-self.robot.location[1])**2) 
                 q.put((d, [goal_cells[i].x, goal_cells[i].y, goal_cells[i].facing_direction]))
 
+        # --------------------- REORDER BASE ON EUCLIDEAN DISTANCE FROM PREVIOUS GOAL NODE --------------------- 
         euclidean_q = []
-        next_start = [1, 1]
+        next_start = const.ROBOT_STARTLOC
         i = 0
         while (len(goal_cells)) > 0:
             node = self.get_closest_goal(goal_cells, next_start)
             euclidean_q.append(node)
-            next_start = [euclidean_q[i][1][0], euclidean_q[i][1][1]]
+            next_start = [euclidean_q[i][1][0], euclidean_q[i][1][1]] #Node = (euclidianDist, (X, Y, Orientation), Goal object)
             goal_cells.remove(node[2])
+            i+= 1
 
-
+        # --------------------- ADD "(X, Y, Orientation)" OF EACH NODE INTO end_points[]?? ---------------------
         end_points = []
         i = 0
-        while (len(euclidean_q)) > 0: #len(self.grid.goal_cells) > 0:
+        while (len(euclidean_q)) > 0:
             temp_point = euclidean_q[0]
             euclidean_q.remove(euclidean_q[0])
             end_points.append([temp_point[1][0], temp_point[1][1], temp_point[1][2]])
             i += 1
-        current_start = (1,1)
+
+        # --------------------- ASTAR Algorithm ---------------------
+        current_start = (const.ROBOT_STARTLOC[0], const.ROBOT_STARTLOC[1])
         current_orientation = const.NORTH
         path = []
         superpath = []
         i = 0
-        to_execute = []
+
         while i < len(end_points):
-            print(str(current_start) + ' ' + str(current_orientation))
             current_endpoint = (end_points[i][0], end_points[i][1])
             astar = Astar(self.grid, current_start, current_endpoint)
+            self.maze = self.make_maze()
             astar.set_maze(self.maze)
-            tried = False
             try:
-                leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2])
+                leg, resultant_pos = astar.make_path(current_orientation, end_points[i][2]) # leg RETURNS LIST OF RobotMoves TO resultant_pos
                 current_start = resultant_pos
                 current_orientation = end_points[i][2]
                 path.append(leg)
-                to_execute.append(end_points[i])
+
+                for movement in leg:
+                    superpath.append(movement)
+                superpath.append(end_points[i])
                 i += 1
             except:
                 print("Path not found to ", end_points[i])
                 i += 1
-
-        i = 0
-        for leg in path:
-            for movement in leg:
-                superpath.append(movement)
-            superpath.append(to_execute[i])
-            i += 1
-
         commands = get_commands(superpath)
-
         print(commands)
-
 
         self.robot.movement_queue = superpath
         return path
@@ -227,5 +219,4 @@ class Simulator:
                 else:
                     row.append(1)
             maze.append(row)
-
         return maze

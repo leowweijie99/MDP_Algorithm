@@ -1,0 +1,4 @@
+Flask==2.2.3
+flask_cors==3.0.10
+numpy==1.24.1
+pygame==2.1.2

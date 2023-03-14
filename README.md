@@ -12,17 +12,17 @@ This project utilizes Pygame to simulate MDP's Week 8 obstacle detection challen
 
 
 #### Add obstacle
--Left click any empty cell on the grid to add an obstacle.
+-Left click any empty cell on the grid to add an obstacle
 
--Left click on an obstacle to cycle through the facing direction.
+-Left click on an obstacle to cycle through the facing direction
 
 #### Remove obstacle
--Right on an obstacle to remove.
+-Right on an obstacle to remove
 
 #### Run Algorithm
 -Add obstacles
 
--Click on 'Start' button.
+-Click on 'Start' button
 
 #### Robot Controls vectors (based on grid)
 -Forward (0, 1)

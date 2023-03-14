@@ -1,6 +1,10 @@
 # MDP_Algorithm
 ### NTU SC2079 Multidisciplinary Design Project Algorithm
 This project utilizes Pygame to simulate MDP's Week 8 obstacle detection challenge. The Hamiltonian path and A* search algorithm are used to determine the order in which to visit the obstacles and the robot's movements to follow that path.
+
+![img1](https://user-images.githubusercontent.com/104302960/225003512-39e296f4-9e88-4cd0-bc1c-7f542aa574b6.PNG)
+
+
 ### Installing Dependencies
 - pip install -r requirements.txt
 
